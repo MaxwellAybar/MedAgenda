@@ -5,12 +5,14 @@ using System.Text;
 using System.Threading.Tasks;
 using MedAgenda.Domain.Base;
 
-namespace MedAgenda.Domain.Entities.Notifications
+namespace MedAgenda.Domain.Entities
 {
-    public class Notification : AuditEntity
+    public class MedicalSpecialty
     {
         public int Id { get; set; }
-        public string Message { get; set; }
-        public DateTime SentDate { get; set; }
+
+        public string Name { get; set; }
+
+        public string Description { get; set; }
     }
 }

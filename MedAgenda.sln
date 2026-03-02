@@ -1,9 +1,13 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
-VisualStudioVersion = 17.14.37012.4 d17.14
+VisualStudioVersion = 17.14.37012.4
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedAgenda.Domain", "MedAgenda.Domain\MedAgenda.Domain.csproj", "{DD92EAFC-F69B-4015-99DE-5BEC426EB6B9}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedAgenda.Persistence", "MedAgenda.Persistence\MedAgenda.Persistence.csproj", "{F081C32F-1E96-475F-AE75-C676246288B5}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedAgenda.Api", "MedAgenda.Api\MedAgenda.Api.csproj", "{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -15,6 +19,14 @@ Global
 		{DD92EAFC-F69B-4015-99DE-5BEC426EB6B9}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DD92EAFC-F69B-4015-99DE-5BEC426EB6B9}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DD92EAFC-F69B-4015-99DE-5BEC426EB6B9}.Release|Any CPU.Build.0 = Release|Any CPU
+		{F081C32F-1E96-475F-AE75-C676246288B5}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{F081C32F-1E96-475F-AE75-C676246288B5}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{F081C32F-1E96-475F-AE75-C676246288B5}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{F081C32F-1E96-475F-AE75-C676246288B5}.Release|Any CPU.Build.0 = Release|Any CPU
+		{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

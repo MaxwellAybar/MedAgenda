@@ -5,13 +5,16 @@ using System.Text;
 using System.Threading.Tasks;
 using MedAgenda.Domain.Base;
 
-namespace MedAgenda.Domain.Entities.History
+namespace MedAgenda.Domain.Entities
 {
-    public class SystemHistory : AuditEntity
+    public class SystemHistory
     {
         public int Id { get; set; }
+
         public string Action { get; set; }
+
         public string PerformedBy { get; set; }
-        public DateTime ActionDate { get; set; }
+
+        public DateTime Date { get; set; }
     }
 }
