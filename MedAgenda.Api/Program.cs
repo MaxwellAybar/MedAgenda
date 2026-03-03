@@ -1,20 +1,31 @@
 using MedAgenda.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
+using MedAgenda.Persistence.Interfaces;
+using MedAgenda.Persistence.Repositories;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 
 builder.Services.AddControllers();
-// Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
+
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
 builder.Services.AddDbContext<MedAgendaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
+
+builder.Services.AddScoped<IUserRepository, UserRepository>();
+builder.Services.AddScoped<IMedicalSpecialtyRepository, MedicalSpecialtyRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IPatientRepository, PatientRepository>();
+builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
+builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
+builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
+builder.Services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
+builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
