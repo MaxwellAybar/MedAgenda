@@ -2,6 +2,8 @@ using MedAgenda.Persistence.Context;
 using Microsoft.EntityFrameworkCore;
 using MedAgenda.Persistence.Interfaces;
 using MedAgenda.Persistence.Repositories;
+using MedAgenda.Application.Interfaces;
+using MedAgenda.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -23,6 +25,7 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
 builder.Services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
 builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
+builder.Services.AddScoped<IMedicalSpecialtyService, MedicalSpecialtyService>();
 var app = builder.Build();
 
 

@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedAgenda.Persistence", "Me
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedAgenda.Api", "MedAgenda.Api\MedAgenda.Api.csproj", "{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "MedAgenda.Application", "MedAgenda.Application\MedAgenda.Application.csproj", "{7CD3DC1E-2AF2-4443-AB6D-43FD0D09D014}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -27,6 +29,10 @@ Global
 		{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{3A065B35-F118-4A13-AA0F-CCEC67BD4E33}.Release|Any CPU.Build.0 = Release|Any CPU
+		{7CD3DC1E-2AF2-4443-AB6D-43FD0D09D014}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{7CD3DC1E-2AF2-4443-AB6D-43FD0D09D014}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{7CD3DC1E-2AF2-4443-AB6D-43FD0D09D014}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{7CD3DC1E-2AF2-4443-AB6D-43FD0D09D014}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
