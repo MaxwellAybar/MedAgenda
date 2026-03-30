@@ -1,13 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using MedAgenda.Persistence.Context;
-using System.Linq.Expressions;
 
 namespace MedAgenda.Persistence.Base
 {
     public class BaseRepository<T> where T : class
     {
-        protected readonly MedAgendaContext _context;
-        protected readonly DbSet<T> _dbSet;
+        private readonly MedAgendaContext _context;
+        private readonly DbSet<T> _dbSet;
 
         public BaseRepository(MedAgendaContext context)
         {
@@ -17,30 +16,65 @@ namespace MedAgenda.Persistence.Base
 
         public virtual async Task<List<T>> GetAllAsync()
         {
-            return await _dbSet.ToListAsync();
+            try
+            {
+                return await _dbSet.ToListAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al obtener los datos", ex);
+            }
         }
 
         public virtual async Task<T?> GetByIdAsync(int id)
         {
-            return await _dbSet.FindAsync(id);
+            try
+            {
+                return await _dbSet.FindAsync(id);
+            }
+            catch (Exception ex)
+            {
+                throw new Exception($"Error al obtener el registro con id {id}", ex);
+            }
         }
 
         public virtual async Task AddAsync(T entity)
         {
-            await _dbSet.AddAsync(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                await _dbSet.AddAsync(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al guardar en la base de datos", ex);
+            }
         }
 
         public virtual async Task UpdateAsync(T entity)
         {
-            _dbSet.Update(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _dbSet.Update(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al actualizar el registro", ex);
+            }
         }
 
         public virtual async Task DeleteAsync(T entity)
         {
-            _dbSet.Remove(entity);
-            await _context.SaveChangesAsync();
+            try
+            {
+                _dbSet.Remove(entity);
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception ex)
+            {
+                throw new Exception("Error al eliminar el registro", ex);
+            }
         }
     }
 }
