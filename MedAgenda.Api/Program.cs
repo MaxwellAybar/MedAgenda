@@ -7,6 +7,17 @@ using MedAgenda.Application.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
+// ?? CORS (AGREGADO)
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowAll",
+        policy =>
+        {
+            policy.AllowAnyOrigin()
+                  .AllowAnyMethod()
+                  .AllowAnyHeader();
+        });
+});
 
 builder.Services.AddControllers();
 
@@ -25,15 +36,19 @@ builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
 builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
 builder.Services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
 builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
-builder.Services.AddScoped<IMedicalSpecialtyService, MedicalSpecialtyService>();
-var app = builder.Build();
 
+builder.Services.AddScoped<IMedicalSpecialtyService, MedicalSpecialtyService>();
+
+var app = builder.Build();
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// ?? CORS (ACTIVADO)
+app.UseCors("AllowAll");
 
 app.UseHttpsRedirection();
 

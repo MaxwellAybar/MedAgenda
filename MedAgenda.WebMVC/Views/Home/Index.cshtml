@@ -1,0 +1,55 @@
+﻿<h2>Doctor Availability</h2>
+
+<button onclick="loadData()">Cargar Datos</button>
+
+<ul id="list"></ul>
+
+<h3>Agregar Disponibilidad</h3>
+
+<input type="number" id="providerId" placeholder="ProviderId" />
+<input type="number" id="day" placeholder="Day" />
+<input type="text" id="startTime" placeholder="08:00:00" />
+<input type="text" id="endTime" placeholder="12:00:00" />
+
+<button onclick="addData()">Guardar</button>
+
+<script>
+    const apiUrl = "https://localhost:7183/api/DoctorAvailability";
+
+    async function loadData() {
+        const response = await fetch(apiUrl);
+        const data = await response.json();
+
+        const list = document.getElementById("list");
+        list.innerHTML = "";
+
+        data.forEach(item => {
+            const li = document.createElement("li");
+            li.innerText = `ID: ${item.id} - Provider: ${item.providerId} - ${item.startTime} a ${item.endTime}`;
+            list.appendChild(li);
+        });
+    }
+
+    async function addData() {
+        const providerId = document.getElementById("providerId").value;
+        const day = document.getElementById("day").value;
+        const startTime = document.getElementById("startTime").value;
+        const endTime = document.getElementById("endTime").value;
+
+        await fetch(apiUrl, {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+                providerId: parseInt(providerId),
+                day: parseInt(day),
+                startTime: startTime,
+                endTime: endTime
+            })
+        });
+
+        alert("Guardado!");
+        loadData();
+    }
+</script>
