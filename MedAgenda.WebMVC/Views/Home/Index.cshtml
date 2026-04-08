@@ -1,55 +1,306 @@
-﻿<h2>Doctor Availability</h2>
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Doctor Availability</title>
 
-<button onclick="loadData()">Cargar Datos</button>
+    <style>
+        body {
+            font-family: Arial;
+            background: #f4f6f9;
+            padding: 20px;
+        }
 
-<ul id="list"></ul>
+        h2 {
+            text-align: center;
+            color: #333;
+        }
 
-<h3>Agregar Disponibilidad</h3>
+        .container {
+            max-width: 900px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0px 0px 10px rgba(0,0,0,0.1);
+        }
 
-<input type="number" id="providerId" placeholder="ProviderId" />
-<input type="number" id="day" placeholder="Day" />
-<input type="text" id="startTime" placeholder="08:00:00" />
-<input type="text" id="endTime" placeholder="12:00:00" />
+        .form-group {
+            margin-bottom: 10px;
+        }
 
-<button onclick="addData()">Guardar</button>
+        label {
+            font-weight: bold;
+        }
 
-<script>
-    const apiUrl = "https://localhost:7183/api/DoctorAvailability";
+        input {
+            width: 100%;
+            padding: 8px;
+            margin-top: 3px;
+            border-radius: 5px;
+            border: 1px solid #ccc;
+        }
 
-    async function loadData() {
-        const response = await fetch(apiUrl);
-        const data = await response.json();
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            margin-right: 5px;
+        }
 
-        const list = document.getElementById("list");
-        list.innerHTML = "";
+        .btn-save {
+            background: #28a745;
+            color: white;
+        }
 
-        data.forEach(item => {
-            const li = document.createElement("li");
-            li.innerText = `ID: ${item.id} - Provider: ${item.providerId} - ${item.startTime} a ${item.endTime}`;
-            list.appendChild(li);
-        });
-    }
+        .btn-update {
+            background: #007bff;
+            color: white;
+        }
 
-    async function addData() {
-        const providerId = document.getElementById("providerId").value;
-        const day = document.getElementById("day").value;
-        const startTime = document.getElementById("startTime").value;
-        const endTime = document.getElementById("endTime").value;
+        .btn-load {
+            background: #6c757d;
+            color: white;
+        }
 
-        await fetch(apiUrl, {
-            method: "POST",
-            headers: {
-                "Content-Type": "application/json"
-            },
-            body: JSON.stringify({
+        .btn-delete {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-edit {
+            background: #ffc107;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th {
+            background: #007bff;
+            color: white;
+            padding: 10px;
+        }
+
+        td {
+            padding: 8px;
+            text-align: center;
+            border-bottom: 1px solid #ddd;
+        }
+
+        tr:hover {
+            background: #f1f1f1;
+        }
+    </style>
+</head>
+
+<body>
+
+    <div class="container">
+
+        <h2>Doctor Availability</h2>
+
+        <div class="form-group">
+            <label>Provider Id:</label>
+            <input type="number" id="providerId">
+        </div>
+
+        <div class="form-group">
+            <label>Day:</label>
+            <input type="number" id="day">
+        </div>
+
+        <div class="form-group">
+            <label>Start Time:</label>
+            <input type="time" id="startTime">
+        </div>
+
+        <div class="form-group">
+            <label>End Time:</label>
+            <input type="time" id="endTime">
+        </div>
+
+        <input type="hidden" id="id">
+
+        <br>
+
+        <button class="btn-save" onclick="addData()">Guardar</button>
+        <button class="btn-update" onclick="updateData()">Actualizar</button>
+        <button class="btn-load" onclick="loadData()">Cargar Datos</button>
+
+        <hr>
+
+        <table>
+            <thead>
+                <tr>
+                    <th>ID</th>
+                    <th>Provider</th>
+                    <th>Day</th>
+                    <th>Start</th>
+                    <th>End</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody id="dataTable"></tbody>
+        </table>
+
+    </div>
+
+    <script>
+        const API_URL = "https://localhost:7183/api/DoctorAvailability";
+
+        async function loadData() {
+            const res = await fetch(API_URL);
+            const data = await res.json();
+
+            let table = "";
+            data.forEach(x => {
+                table += `
+                <tr>
+                    <td>${x.id}</td>
+                    <td>${x.providerId}</td>
+                    <td>${x.day}</td>
+                    <td>${x.startTime}</td>
+                    <td>${x.endTime}</td>
+                    <td>
+                        <button class="btn-edit" onclick="editData(${x.id}, ${x.providerId}, ${x.day}, '${x.startTime}', '${x.endTime}')">Editar</button>
+                        <button class="btn-delete" onclick="deleteData(${x.id})">Eliminar</button>
+                    </td>
+                </tr>`;
+            });
+
+            document.getElementById("dataTable").innerHTML = table;
+        }
+
+        async function addData() {
+            const providerId = document.getElementById("providerId").value;
+            const day = document.getElementById("day").value;
+            const startTime = document.getElementById("startTime").value;
+            const endTime = document.getElementById("endTime").value;
+
+            if (!providerId || !day || !startTime || !endTime) {
+                alert("Todos los campos son obligatorios");
+                return;
+            }
+
+            if (parseInt(day) < 1 || parseInt(day) > 7) {
+                alert("El día debe ser entre 1 y 7");
+                return;
+            }
+
+            if (startTime >= endTime) {
+                alert("La hora de inicio debe ser menor que la de fin");
+                return;
+            }
+
+            const data = {
                 providerId: parseInt(providerId),
                 day: parseInt(day),
-                startTime: startTime,
-                endTime: endTime
-            })
-        });
+                startTime: startTime + ":00",
+                endTime: endTime + ":00"
+            };
 
-        alert("Guardado!");
-        loadData();
-    }
-</script>
+            try {
+                const res = await fetch(API_URL, {
+                    method: "POST",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    alert("Error al guardar en la API");
+                    return;
+                }
+
+                alert("Guardado!");
+                loadData();
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión con la API");
+            }
+        }
+
+        function editData(id, providerId, day, start, end) {
+            document.getElementById("id").value = id;
+            document.getElementById("providerId").value = providerId;
+            document.getElementById("day").value = day;
+            document.getElementById("startTime").value = start.substring(0,5);
+            document.getElementById("endTime").value = end.substring(0,5);
+        }
+
+        async function updateData() {
+            const id = document.getElementById("id").value;
+            const providerId = document.getElementById("providerId").value;
+            const day = document.getElementById("day").value;
+            const startTime = document.getElementById("startTime").value;
+            const endTime = document.getElementById("endTime").value;
+
+            if (!id) {
+                alert("Debe seleccionar un registro");
+                return;
+            }
+
+            if (!providerId || !day || !startTime || !endTime) {
+                alert("Todos los campos son obligatorios");
+                return;
+            }
+
+            if (startTime >= endTime) {
+                alert("Hora inválida");
+                return;
+            }
+
+            const data = {
+                id: parseInt(id),
+                providerId: parseInt(providerId),
+                day: parseInt(day),
+                startTime: startTime + ":00",
+                endTime: endTime + ":00"
+            };
+
+            try {
+                const res = await fetch(API_URL, {
+                    method: "PUT",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify(data)
+                });
+
+                if (!res.ok) {
+                    alert("Error al actualizar");
+                    return;
+                }
+
+                alert("Actualizado!");
+                loadData();
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión");
+            }
+        }
+
+        async function deleteData(id) {
+            if (!confirm("¿Seguro que deseas eliminar?")) return;
+
+            try {
+                const res = await fetch(`${API_URL}/${id}`, {
+                    method: "DELETE"
+                });
+
+                if (!res.ok) {
+                    alert("Error al eliminar");
+                    return;
+                }
+
+                alert("Eliminado!");
+                loadData();
+            } catch (error) {
+                console.error(error);
+                alert("Error de conexión");
+            }
+        }
+    </script>
+
+</body>
+</html>

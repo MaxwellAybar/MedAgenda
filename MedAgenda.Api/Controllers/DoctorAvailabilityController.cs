@@ -32,6 +32,12 @@ namespace MedAgenda.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(DoctorAvailability entity)
         {
+            //  VALIDACIÓN ACTUALIZADA
+            if (entity.StartTime >= entity.EndTime)
+            {
+                return BadRequest("La hora de inicio debe ser menor que la de fin");
+            }
+
             await _repository.AddAsync(entity);
             return Ok();
         }
@@ -39,6 +45,12 @@ namespace MedAgenda.Api.Controllers
         [HttpPut]
         public async Task<IActionResult> Put(DoctorAvailability entity)
         {
+            // 🔥 VALIDACIÓN
+            if (entity.StartTime >= entity.EndTime)
+            {
+                return BadRequest("La hora de inicio debe ser menor que la de fin");
+            }
+
             await _repository.UpdateAsync(entity);
             return Ok();
         }

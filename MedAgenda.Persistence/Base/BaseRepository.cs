@@ -1,17 +1,20 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using MedAgenda.Persistence.Context;
 
 namespace MedAgenda.Persistence.Base
 {
     public class BaseRepository<T> where T : class
     {
-        private readonly MedAgendaContext _context;
-        private readonly DbSet<T> _dbSet;
+        protected readonly MedAgendaContext _context;
+        protected readonly DbSet<T> _dbSet;
+        protected readonly ILogger<BaseRepository<T>> _logger;
 
-        public BaseRepository(MedAgendaContext context)
+        public BaseRepository(MedAgendaContext context, ILogger<BaseRepository<T>> logger)
         {
             _context = context;
             _dbSet = _context.Set<T>();
+            _logger = logger;
         }
 
         public virtual async Task<List<T>> GetAllAsync()
@@ -22,7 +25,8 @@ namespace MedAgenda.Persistence.Base
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al obtener los datos", ex);
+                _logger.LogError(ex, "Error al obtener todos los datos");
+                throw;
             }
         }
 
@@ -34,7 +38,8 @@ namespace MedAgenda.Persistence.Base
             }
             catch (Exception ex)
             {
-                throw new Exception($"Error al obtener el registro con id {id}", ex);
+                _logger.LogError(ex, $"Error al obtener el registro con id {id}");
+                throw;
             }
         }
 
@@ -47,7 +52,8 @@ namespace MedAgenda.Persistence.Base
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al guardar en la base de datos", ex);
+                _logger.LogError(ex, "Error al guardar en la base de datos");
+                throw;
             }
         }
 
@@ -60,7 +66,8 @@ namespace MedAgenda.Persistence.Base
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al actualizar el registro", ex);
+                _logger.LogError(ex, "Error al actualizar el registro");
+                throw;
             }
         }
 
@@ -73,7 +80,8 @@ namespace MedAgenda.Persistence.Base
             }
             catch (Exception ex)
             {
-                throw new Exception("Error al eliminar el registro", ex);
+                _logger.LogError(ex, "Error al eliminar el registro");
+                throw;
             }
         }
     }
