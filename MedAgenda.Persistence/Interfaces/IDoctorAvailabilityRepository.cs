@@ -1,4 +1,7 @@
 ﻿using MedAgenda.Domain.Entities;
+using System;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 
 namespace MedAgenda.Persistence.Interfaces
 {
@@ -10,7 +13,8 @@ namespace MedAgenda.Persistence.Interfaces
         Task UpdateAsync(DoctorAvailability availability);
         Task DeleteAsync(DoctorAvailability availability);
 
-        // 🔥 MÉTODO PERSONALIZADO
         Task<List<DoctorAvailability>> GetByProviderAsync(int providerId);
+
+        Task<bool> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate);
     }
 }

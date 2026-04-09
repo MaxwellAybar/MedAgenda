@@ -1,6 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MedAgenda.Persistence.Interfaces;
-using MedAgenda.Domain.Entities;
+﻿using MedAgenda.Application.Dtos.Patient;
+using MedAgenda.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -8,25 +8,25 @@ namespace MedAgenda.Api.Controllers
     [Route("api/[controller]")]
     public class PatientController : ControllerBase
     {
-        private readonly IPatientRepository _repository;
+        private readonly IPatientService _service;
 
-        public PatientController(IPatientRepository repository)
+        public PatientController(IPatientService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var data = await _repository.GetAllAsync();
+            var data = await _service.GetAllPatientsAsync();
             return Ok(data);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Patient entity)
+        public async Task<IActionResult> Post(CreatePatientDto dto)
         {
-            await _repository.AddAsync(entity);
-            return Ok();
+            var result = await _service.CreatePatientAsync(dto);
+            return Ok(result);
         }
     }
 }

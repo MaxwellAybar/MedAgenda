@@ -1,0 +1,10 @@
+﻿using System;
+
+namespace MedAgenda.Application.Dtos.Notification
+{
+    public class UpdateNotificationDto
+    {
+        public int Id { get; set; }
+        public bool IsRead { get; set; }
+    }
+}

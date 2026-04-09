@@ -14,5 +14,7 @@ namespace MedAgenda.Persistence.Interfaces
         Task AddAsync(Appointment appointment);
         Task UpdateAsync(Appointment appointment);
         Task DeleteAsync(Appointment appointment);
+        Task<List<Appointment>> GetByPatientIdAsync(int patientId);
+        Task<List<Appointment>> GetByDoctorIdAsync(int doctorId);
     }
 }

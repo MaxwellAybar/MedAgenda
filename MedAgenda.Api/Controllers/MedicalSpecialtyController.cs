@@ -1,4 +1,4 @@
-﻿using MedAgenda.Application.Dtos.MedicalSpecialty;
+﻿using MedAgenda.Application.Dtos.Specialty; // 👈 Usar la carpeta correcta
 using MedAgenda.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
 
@@ -30,7 +30,7 @@ namespace MedAgenda.Api.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(SaveMedicalSpecialtyDto dto)
+        public async Task<IActionResult> Post(CreateMedicalSpecialtyDto dto) // 👈 cambiar SaveMedicalSpecialtyDto por CreateMedicalSpecialtyDto
         {
             await _service.Add(dto);
             return Ok();

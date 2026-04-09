@@ -1,9 +1,7 @@
-﻿using System;
+﻿using MedAgenda.Application.Dtos.Specialty;
+using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MedAgenda.Application.Dtos.MedicalSpecialty;
 
 namespace MedAgenda.Application.Interfaces
 {
@@ -13,7 +11,7 @@ namespace MedAgenda.Application.Interfaces
 
         Task<MedicalSpecialtyDto> GetById(int id);
 
-        Task Add(SaveMedicalSpecialtyDto dto);
+        Task Add(CreateMedicalSpecialtyDto dto); // <- Cambiado a CreateMedicalSpecialtyDto
 
         Task Update(UpdateMedicalSpecialtyDto dto);
 

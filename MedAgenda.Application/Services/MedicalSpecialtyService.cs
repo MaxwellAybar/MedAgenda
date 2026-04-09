@@ -1,7 +1,11 @@
-﻿using MedAgenda.Application.Dtos.MedicalSpecialty;
+﻿using MedAgenda.Application.Dtos.Specialty; // Tus DTOs actuales
 using MedAgenda.Application.Interfaces;
 using MedAgenda.Domain.Entities;
 using MedAgenda.Persistence.Interfaces;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MedAgenda.Application.Services
 {
@@ -41,7 +45,7 @@ namespace MedAgenda.Application.Services
             };
         }
 
-        public async Task Add(SaveMedicalSpecialtyDto dto)
+        public async Task Add(CreateMedicalSpecialtyDto dto) // ✅ aquí usamos CreateMedicalSpecialtyDto
         {
             if (string.IsNullOrWhiteSpace(dto.Name))
                 throw new Exception("El nombre es obligatorio");

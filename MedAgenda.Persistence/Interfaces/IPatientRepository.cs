@@ -1,10 +1,6 @@
-﻿using System;
+﻿using MedAgenda.Domain.Entities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-
-using MedAgenda.Domain.Entities;
 
 namespace MedAgenda.Persistence.Interfaces
 {
