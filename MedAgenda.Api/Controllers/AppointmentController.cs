@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MedAgenda.Persistence.Interfaces;
-using MedAgenda.Domain.Entities;
+using MedAgenda.Application.Dtos.Appointment;
+using MedAgenda.Application.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -8,52 +10,68 @@ namespace MedAgenda.Api.Controllers
     [Route("api/[controller]")]
     public class AppointmentController : ControllerBase
     {
-        private readonly IAppointmentRepository _repository;
+        private readonly IAppointmentService _service;
 
-        public AppointmentController(IAppointmentRepository repository)
+        public AppointmentController(IAppointmentService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var data = await _repository.GetAllAsync();
+            var data = await _service.GetAppointmentsByPatientAsync(0); 
             return Ok(data);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var data = await _repository.GetByIdAsync(id);
-            return Ok(data);
+            try
+            {
+                var data = await _service.GetAppointmentByIdAsync(id);
+                return Ok(data);
+            }
+            catch (Exception ex)
+            {
+                return NotFound(ex.Message);
+            }
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Appointment entity)
+        public async Task<IActionResult> Post(CreateAppointmentDto dto)
         {
-            await _repository.AddAsync(entity);
-            return Ok();
+            try
+            {
+                var result = await _service.RequestAppointmentAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(Appointment entity)
+        public async Task<IActionResult> Put(UpdateAppointmentDto dto)
         {
-            await _repository.UpdateAsync(entity);
-            return Ok();
+            try
+            {
+                var result = await _service.UpdateAppointmentAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _repository.GetByIdAsync(id);
-
-            if (entity != null)
-            {
-                await _repository.DeleteAsync(entity);
-            }
-
-            return Ok();
+            var success = await _service.CancelAppointmentAsync(id);
+            if (success) return Ok();
+            return NotFound("Cita no encontrada o ya cancelada");
         }
     }
 }

@@ -1,8 +1,8 @@
 ﻿using MedAgenda.Application.Dtos.DoctorAvailability;
 using MedAgenda.Application.Interfaces;
 using MedAgenda.Domain.Entities;
-using MedAgenda.Persistence.Interfaces; // ✅ Importa solo esta
-using MedAgenda.Persistence.Repositories;
+using MedAgenda.Persistence.Interfaces;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -11,7 +11,7 @@ namespace MedAgenda.Application.Services
 {
     public class DoctorAvailabilityService : IDoctorAvailabilityService
     {
-        private readonly IDoctorAvailabilityRepository _repository; // 🔹 Ahora apunta a Persistence
+        private readonly IDoctorAvailabilityRepository _repository;
 
         public DoctorAvailabilityService(IDoctorAvailabilityRepository repository)
         {
@@ -21,7 +21,7 @@ namespace MedAgenda.Application.Services
         public async Task<DoctorAvailabilityDto> CreateAvailabilityAsync(CreateDoctorAvailabilityDto dto)
         {
             if (dto.StartTime >= dto.EndTime)
-                throw new System.ArgumentException("La hora de inicio debe ser menor que la de fin");
+                throw new Exception("La hora de inicio debe ser menor que la hora de fin");
 
             var entity = new DoctorAvailability
             {
@@ -49,12 +49,11 @@ namespace MedAgenda.Application.Services
             if (entity == null) return null;
 
             if (dto.StartTime >= dto.EndTime)
-                throw new System.ArgumentException("La hora de inicio debe ser menor que la de fin");
+                throw new Exception("La hora de inicio debe ser menor que la hora de fin");
 
+            entity.Day = dto.Day;
             entity.StartTime = dto.StartTime;
             entity.EndTime = dto.EndTime;
-            entity.ProviderId = dto.ProviderId;
-            entity.Day = dto.Day;
 
             await _repository.UpdateAsync(entity);
 
@@ -92,19 +91,17 @@ namespace MedAgenda.Application.Services
             };
         }
 
-        public async Task<IEnumerable<DoctorAvailabilityDto>> GetAvailabilitiesByDoctorAsync(int providerId)
+        public async Task<IEnumerable<DoctorAvailabilityDto>> GetAvailabilitiesByDoctorAsync(int doctorId)
         {
-            var entities = await _repository.GetAllAsync();
-            return entities
-                .Where(a => a.ProviderId == providerId)
-                .Select(a => new DoctorAvailabilityDto
-                {
-                    Id = a.Id,
-                    ProviderId = a.ProviderId,
-                    Day = a.Day,
-                    StartTime = a.StartTime,
-                    EndTime = a.EndTime
-                });
+            var data = await _repository.GetByDoctorIdAsync(doctorId);
+            return data.Select(x => new DoctorAvailabilityDto
+            {
+                Id = x.Id,
+                ProviderId = x.ProviderId,
+                Day = x.Day,
+                StartTime = x.StartTime,
+                EndTime = x.EndTime
+            });
         }
     }
 }

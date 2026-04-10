@@ -1,4 +1,4 @@
-﻿using MedAgenda.Application.Dtos.Specialty; // Tus DTOs actuales
+﻿using MedAgenda.Application.Dtos.Specialty;
 using MedAgenda.Application.Interfaces;
 using MedAgenda.Domain.Entities;
 using MedAgenda.Persistence.Interfaces;
@@ -18,24 +18,21 @@ namespace MedAgenda.Application.Services
             _repository = repository;
         }
 
-        public async Task<List<MedicalSpecialtyDto>> GetAll()
+        public async Task<IEnumerable<MedicalSpecialtyDto>> GetAll()
         {
-            var entities = await _repository.GetAllAsync();
-
-            return entities.Select(x => new MedicalSpecialtyDto
+            var list = await _repository.GetAllAsync();
+            return list.Select(x => new MedicalSpecialtyDto
             {
                 Id = x.Id,
                 Name = x.Name,
                 Description = x.Description
-            }).ToList();
+            });
         }
 
-        public async Task<MedicalSpecialtyDto?> GetById(int id)
+        public async Task<MedicalSpecialtyDto> GetById(int id)
         {
             var entity = await _repository.GetByIdAsync(id);
-
-            if (entity == null)
-                throw new Exception("Especialidad no encontrada");
+            if (entity == null) throw new Exception("Especialidad no encontrada");
 
             return new MedicalSpecialtyDto
             {
@@ -45,11 +42,8 @@ namespace MedAgenda.Application.Services
             };
         }
 
-        public async Task Add(CreateMedicalSpecialtyDto dto) // ✅ aquí usamos CreateMedicalSpecialtyDto
+        public async Task Add(CreateMedicalSpecialtyDto dto)
         {
-            if (string.IsNullOrWhiteSpace(dto.Name))
-                throw new Exception("El nombre es obligatorio");
-
             var entity = new MedicalSpecialty
             {
                 Name = dto.Name,
@@ -62,12 +56,7 @@ namespace MedAgenda.Application.Services
         public async Task Update(UpdateMedicalSpecialtyDto dto)
         {
             var entity = await _repository.GetByIdAsync(dto.Id);
-
-            if (entity == null)
-                throw new Exception("Especialidad no encontrada");
-
-            if (string.IsNullOrWhiteSpace(dto.Name))
-                throw new Exception("El nombre es obligatorio");
+            if (entity == null) throw new Exception("Especialidad no encontrada");
 
             entity.Name = dto.Name;
             entity.Description = dto.Description;
@@ -78,9 +67,7 @@ namespace MedAgenda.Application.Services
         public async Task Delete(int id)
         {
             var entity = await _repository.GetByIdAsync(id);
-
-            if (entity == null)
-                throw new Exception("Especialidad no encontrada");
+            if (entity == null) throw new Exception("Especialidad no encontrada");
 
             await _repository.DeleteAsync(entity);
         }

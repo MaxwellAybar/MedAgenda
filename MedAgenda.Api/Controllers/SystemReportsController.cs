@@ -1,6 +1,7 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MedAgenda.Persistence.Interfaces;
-using MedAgenda.Domain.Entities;
+﻿using MedAgenda.Application.Dtos.SystemReports;
+using MedAgenda.Application.Interfaces;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -8,18 +9,37 @@ namespace MedAgenda.Api.Controllers
     [Route("api/[controller]")]
     public class SystemReportsController : ControllerBase
     {
-        private readonly ISystemReportsRepository _repository;
+        private readonly ISystemReportsService _service;
 
-        public SystemReportsController(ISystemReportsRepository repository)
+        public SystemReportsController(ISystemReportsService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
+            => Ok(await _service.GetAllReportsAsync());
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
         {
-            var data = await _repository.GetAllAsync();
-            return Ok(data);
+            var result = await _service.GetReportByIdAsync(id);
+            return result != null ? Ok(result) : NotFound();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Post(CreateSystemReportsDto dto)
+            => Ok(await _service.CreateReportAsync(dto));
+
+        [HttpPut]
+        public async Task<IActionResult> Put(UpdateSystemReportsDto dto)
+            => Ok(await _service.UpdateReportAsync(dto));
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _service.DeleteReportAsync(id);
+            return result ? Ok() : NotFound("Reporte no encontrado");
         }
     }
 }

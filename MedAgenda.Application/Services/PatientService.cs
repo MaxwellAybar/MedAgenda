@@ -10,16 +10,16 @@ namespace MedAgenda.Application.Services
 {
     public class PatientService : IPatientService
     {
-        private readonly IPatientRepository _patientRepository;
+        private readonly IPatientRepository _repository;
 
-        public PatientService(IPatientRepository patientRepository)
+        public PatientService(IPatientRepository repository)
         {
-            _patientRepository = patientRepository;
+            _repository = repository;
         }
 
         public async Task<PatientDto> CreatePatientAsync(CreatePatientDto dto)
         {
-            var patient = new Patient
+            var entity = new Patient
             {
                 FirstName = dto.FirstName,
                 LastName = dto.LastName,
@@ -28,79 +28,86 @@ namespace MedAgenda.Application.Services
                 DateOfBirth = dto.DateOfBirth
             };
 
-            await _patientRepository.AddAsync(patient);
+            await _repository.AddAsync(entity);
 
             return new PatientDto
             {
-                Id = patient.Id,
-                FirstName = patient.FirstName,
-                LastName = patient.LastName,
-                Email = patient.Email,
-                Phone = patient.Phone,
-                DateOfBirth = patient.DateOfBirth
+                Id = entity.Id,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                Phone = entity.Phone,
+                DateOfBirth = entity.DateOfBirth
             };
         }
 
         public async Task<PatientDto> UpdatePatientAsync(UpdatePatientDto dto)
         {
-            var patient = await _patientRepository.GetByIdAsync(dto.Id);
-            if (patient == null) return null!;
+            var entity = await _repository.GetByIdAsync(dto.Id);
 
-            patient.FirstName = dto.FirstName;
-            patient.LastName = dto.LastName;
-            patient.Email = dto.Email;
-            patient.Phone = dto.Phone;
+            if (entity == null)
+                throw new System.Exception("Paciente no encontrado");
 
-            await _patientRepository.UpdateAsync(patient);
+            entity.FirstName = dto.FirstName;
+            entity.LastName = dto.LastName;
+            entity.Email = dto.Email;
+            entity.Phone = dto.Phone;
+            entity.DateOfBirth = dto.DateOfBirth;
+
+            await _repository.UpdateAsync(entity);
 
             return new PatientDto
             {
-                Id = patient.Id,
-                FirstName = patient.FirstName,
-                LastName = patient.LastName,
-                Email = patient.Email,
-                Phone = patient.Phone,
-                DateOfBirth = patient.DateOfBirth
+                Id = entity.Id,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                Phone = entity.Phone,
+                DateOfBirth = entity.DateOfBirth
             };
         }
 
         public async Task<bool> DeletePatientAsync(int id)
         {
-            var patient = await _patientRepository.GetByIdAsync(id);
-            if (patient == null) return false;
+            var entity = await _repository.GetByIdAsync(id);
 
-            await _patientRepository.DeleteAsync(patient);
+            if (entity == null)
+                return false;
+
+            await _repository.DeleteAsync(entity);
             return true;
         }
 
         public async Task<PatientDto> GetPatientByIdAsync(int id)
         {
-            var patient = await _patientRepository.GetByIdAsync(id);
-            if (patient == null) return null!;
+            var entity = await _repository.GetByIdAsync(id);
+
+            if (entity == null)
+                throw new System.Exception("Paciente no encontrado");
 
             return new PatientDto
             {
-                Id = patient.Id,
-                FirstName = patient.FirstName,
-                LastName = patient.LastName,
-                Email = patient.Email,
-                Phone = patient.Phone,
-                DateOfBirth = patient.DateOfBirth
+                Id = entity.Id,
+                FirstName = entity.FirstName,
+                LastName = entity.LastName,
+                Email = entity.Email,
+                Phone = entity.Phone,
+                DateOfBirth = entity.DateOfBirth
             };
         }
 
         public async Task<IEnumerable<PatientDto>> GetAllPatientsAsync()
         {
-            var patients = await _patientRepository.GetAllAsync();
+            var data = await _repository.GetAllAsync();
 
-            return patients.Select(p => new PatientDto
+            return data.Select(x => new PatientDto
             {
-                Id = p.Id,
-                FirstName = p.FirstName,
-                LastName = p.LastName,
-                Email = p.Email,
-                Phone = p.Phone,
-                DateOfBirth = p.DateOfBirth
+                Id = x.Id,
+                FirstName = x.FirstName,
+                LastName = x.LastName,
+                Email = x.Email,
+                Phone = x.Phone,
+                DateOfBirth = x.DateOfBirth
             });
         }
     }

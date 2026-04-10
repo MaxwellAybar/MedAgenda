@@ -2,10 +2,6 @@
 using MedAgenda.Persistence.Context;
 using MedAgenda.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 
 namespace MedAgenda.Persistence.Repositories
 {
@@ -18,9 +14,12 @@ namespace MedAgenda.Persistence.Repositories
             _context = context;
         }
 
+        
         public async Task<List<DoctorAvailability>> GetAllAsync()
         {
-            return await _context.DoctorAvailabilities.ToListAsync();
+            return await _context.DoctorAvailabilities
+                .AsNoTracking()
+                .ToListAsync();
         }
 
         public async Task<DoctorAvailability?> GetByIdAsync(int id)
@@ -36,7 +35,7 @@ namespace MedAgenda.Persistence.Repositories
 
         public async Task UpdateAsync(DoctorAvailability availability)
         {
-            _context.DoctorAvailabilities.Update(availability);
+            _context.Entry(availability).State = EntityState.Modified;
             await _context.SaveChangesAsync();
         }
 
@@ -46,18 +45,21 @@ namespace MedAgenda.Persistence.Repositories
             await _context.SaveChangesAsync();
         }
 
-        public async Task<List<DoctorAvailability>> GetByProviderAsync(int providerId)
+        public async Task<List<DoctorAvailability>> GetByDoctorIdAsync(int doctorId)
         {
             return await _context.DoctorAvailabilities
-                .Where(a => a.ProviderId == providerId)
+                .AsNoTracking()
+                .Where(a => a.ProviderId == doctorId)
                 .ToListAsync();
         }
 
-        // ✅ ESTE ERA EL QUE FALTABA
         public async Task<bool> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate)
         {
-            return !await _context.DoctorAvailabilities
-                .AnyAsync(d => d.ProviderId == doctorId && d.Day == appointmentDate.DayOfWeek);
+            
+            int dayOfWeek = (int)appointmentDate.DayOfWeek;
+
+            return await _context.DoctorAvailabilities
+                .AnyAsync(d => d.ProviderId == doctorId && (int)d.Day == dayOfWeek);
         }
     }
 }

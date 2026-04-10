@@ -1,5 +1,4 @@
-﻿using MedAgenda.Application.Dtos.Availability;
-using MedAgenda.Application.Dtos.DoctorAvailability;
+﻿using MedAgenda.Application.Dtos.DoctorAvailability;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 

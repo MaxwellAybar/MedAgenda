@@ -1,6 +1,8 @@
-﻿using Microsoft.AspNetCore.Mvc;
-using MedAgenda.Persistence.Interfaces;
-using MedAgenda.Domain.Entities;
+﻿using MedAgenda.Application.Dtos.Notification;
+using MedAgenda.Application.Interfaces;
+using MedAgenda.Application.Services;
+using Microsoft.AspNetCore.Mvc;
+using System.Threading.Tasks;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -8,24 +10,46 @@ namespace MedAgenda.Api.Controllers
     [Route("api/[controller]")]
     public class NotificationController : ControllerBase
     {
-        private readonly INotificationRepository _repository;
+        private readonly INotificationService _service;
 
-        public NotificationController(INotificationRepository repository)
+        public NotificationController(INotificationService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet]
-        public async Task<IActionResult> Get()
+        public async Task<IActionResult> GetAll()
         {
-            var data = await _repository.GetAllAsync();
+            var data = await _service.GetAllNotificationsAsync();
+            return Ok(data);
+        }
+
+        [HttpGet("{id}")]
+        public async Task<IActionResult> GetById(int id)
+        {
+            var data = await _service.GetNotificationByIdAsync(id);
             return Ok(data);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(Notification entity)
+        public async Task<IActionResult> Post(CreateNotificationDto dto)
         {
-            await _repository.AddAsync(entity);
+            await _service.CreateNotificationAsync(dto);
+            return Ok();
+        }
+
+        [HttpPut]
+        public async Task<IActionResult> Put(UpdateNotificationDto dto)
+        {
+            await _service.UpdateNotificationAsync(dto);
+            return Ok();
+        }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> Delete(int id)
+        {
+            var result = await _service.DeleteNotificationAsync(id);
+            if (!result) return NotFound("Notificación no encontrada");
             return Ok();
         }
     }

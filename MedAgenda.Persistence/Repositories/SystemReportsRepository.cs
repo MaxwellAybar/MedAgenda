@@ -6,6 +6,7 @@ using Microsoft.Extensions.Logging;
 
 namespace MedAgenda.Persistence.Repositories
 {
+   
     public class SystemReportsRepository
         : BaseRepository<SystemReports>, ISystemReportsRepository
     {

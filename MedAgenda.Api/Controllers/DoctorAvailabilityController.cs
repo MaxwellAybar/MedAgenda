@@ -1,6 +1,8 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using MedAgenda.Persistence.Interfaces;
-using MedAgenda.Domain.Entities;
+using MedAgenda.Application.Dtos.DoctorAvailability;
+using MedAgenda.Application.Interfaces;
+using System;
+using System.Threading.Tasks;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -8,64 +10,59 @@ namespace MedAgenda.Api.Controllers
     [Route("api/[controller]")]
     public class DoctorAvailabilityController : ControllerBase
     {
-        private readonly IDoctorAvailabilityRepository _repository;
+        private readonly IDoctorAvailabilityService _service;
 
-        public DoctorAvailabilityController(IDoctorAvailabilityRepository repository)
+        public DoctorAvailabilityController(IDoctorAvailabilityService service)
         {
-            _repository = repository;
+            _service = service;
         }
 
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var data = await _repository.GetAllAsync();
+            
+            var data = await _service.GetAvailabilitiesByDoctorAsync(1);
             return Ok(data);
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var data = await _repository.GetByIdAsync(id);
+            var data = await _service.GetAvailabilityByIdAsync(id);
+            if (data == null) return NotFound("Disponibilidad no encontrada");
             return Ok(data);
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(DoctorAvailability entity)
+        public async Task<IActionResult> Post(CreateDoctorAvailabilityDto dto)
         {
-            //  VALIDACIÓN ACTUALIZADA
-            if (entity.StartTime >= entity.EndTime)
-            {
+           
+            if (dto.StartTime >= dto.EndTime)
                 return BadRequest("La hora de inicio debe ser menor que la de fin");
-            }
 
-            await _repository.AddAsync(entity);
-            return Ok();
+            var result = await _service.CreateAvailabilityAsync(dto);
+            return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(DoctorAvailability entity)
+        public async Task<IActionResult> Put(UpdateDoctorAvailabilityDto dto)
         {
-            // 🔥 VALIDACIÓN
-            if (entity.StartTime >= entity.EndTime)
-            {
+            if (dto.StartTime >= dto.EndTime)
                 return BadRequest("La hora de inicio debe ser menor que la de fin");
-            }
 
-            await _repository.UpdateAsync(entity);
-            return Ok();
+            var result = await _service.UpdateAvailabilityAsync(dto);
+            if (result == null) return NotFound("Disponibilidad no encontrada");
+            return Ok(result);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var entity = await _repository.GetByIdAsync(id);
+            var success = await _service.DeleteAvailabilityAsync(id);
+            if (!success) return NotFound("Disponibilidad no encontrada");
 
-            if (entity != null)
-            {
-                await _repository.DeleteAsync(entity);
-            }
-
-            return Ok();
+           
+            return Ok(new { message = "Disponibilidad eliminada con éxito" });
         }
     }
 }

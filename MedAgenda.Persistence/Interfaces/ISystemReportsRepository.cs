@@ -1,18 +1,15 @@
-﻿using System;
+﻿using MedAgenda.Domain.Entities;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading.Tasks;
-using MedAgenda.Domain.Entities;
 
 namespace MedAgenda.Persistence.Interfaces
 {
-    public interface ISystemReportsRepository
+    public interface ISystemReportsRepository 
     {
         Task<List<SystemReports>> GetAllAsync();
         Task<SystemReports?> GetByIdAsync(int id);
-        Task AddAsync(SystemReports report);
-        Task UpdateAsync(SystemReports report);
-        Task DeleteAsync(SystemReports report);
+        Task AddAsync(SystemReports entity);
+        Task UpdateAsync(SystemReports entity);
+        Task DeleteAsync(SystemReports entity);
     }
 }
