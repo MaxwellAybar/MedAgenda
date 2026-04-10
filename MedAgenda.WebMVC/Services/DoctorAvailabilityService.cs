@@ -17,7 +17,13 @@ namespace MedAgenda.WebMVC.Services
         public async Task<List<DoctorAvailabilityDTO>> GetAllAsync()
         {
             var response = await _httpClient.GetAsync(baseUrl);
+
+          
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Error al obtener datos desde la API");
+
             var json = await response.Content.ReadAsStringAsync();
+
             return JsonSerializer.Deserialize<List<DoctorAvailabilityDTO>>(json,
                 new JsonSerializerOptions { PropertyNameCaseInsensitive = true });
         }
@@ -40,7 +46,10 @@ namespace MedAgenda.WebMVC.Services
 
         public async Task DeleteAsync(int id)
         {
-            await _httpClient.DeleteAsync($"{baseUrl}/{id}");
+            var response = await _httpClient.DeleteAsync($"{baseUrl}/{id}");
+
+            if (!response.IsSuccessStatusCode)
+                throw new Exception("Error al eliminar datos");
         }
     }
 }

@@ -1,4 +1,5 @@
-﻿namespace MedAgenda.WebMVC.Models
+﻿using System.ComponentModel.DataAnnotations;
+namespace MedAgenda.WebMVC.Models
 {
     public class DoctorAvailabilityDTO
     {
