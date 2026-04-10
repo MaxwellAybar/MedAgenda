@@ -1,9 +1,10 @@
-﻿using MedAgenda.Persistence.Context;
-using Microsoft.EntityFrameworkCore;
-using MedAgenda.Persistence.Interfaces;
-using MedAgenda.Persistence.Repositories;
+﻿using MedAgenda.Application.Exceptions;
 using MedAgenda.Application.Interfaces;
 using MedAgenda.Application.Services;
+using MedAgenda.Persistence.Context;
+using MedAgenda.Persistence.Interfaces;
+using MedAgenda.Persistence.Repositories;
+using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -59,7 +60,28 @@ app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
 
+app.UseExceptionHandler(errorApp =>
+{
+    errorApp.Run(async context =>
+    {
+        var exception = context.Features
+            .Get<Microsoft.AspNetCore.Diagnostics.IExceptionHandlerFeature>()
+            ?.Error;
 
+        context.Response.ContentType = "application/json";
+
+        if (exception is NotFoundException)
+        {
+            context.Response.StatusCode = 404;
+            await context.Response.WriteAsync(exception.Message);
+        }
+        else
+        {
+            context.Response.StatusCode = 500;
+            await context.Response.WriteAsync("Error interno del servidor");
+        }
+    });
+});
 app.MapControllers();
 
 

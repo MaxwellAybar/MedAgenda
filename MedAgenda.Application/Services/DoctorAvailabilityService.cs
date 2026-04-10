@@ -1,8 +1,9 @@
 ﻿using MedAgenda.Application.Dtos.DoctorAvailability;
+using MedAgenda.Application.Exceptions;
 using MedAgenda.Application.Interfaces;
 using MedAgenda.Domain.Entities;
 using MedAgenda.Persistence.Interfaces;
-using System;
+using Microsoft.Extensions.Logging;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -12,16 +13,25 @@ namespace MedAgenda.Application.Services
     public class DoctorAvailabilityService : IDoctorAvailabilityService
     {
         private readonly IDoctorAvailabilityRepository _repository;
+        private readonly ILogger<DoctorAvailabilityService> _logger;
 
-        public DoctorAvailabilityService(IDoctorAvailabilityRepository repository)
+        public DoctorAvailabilityService(
+            IDoctorAvailabilityRepository repository,
+            ILogger<DoctorAvailabilityService> logger)
         {
             _repository = repository;
+            _logger = logger;
         }
 
         public async Task<DoctorAvailabilityDto> CreateAvailabilityAsync(CreateDoctorAvailabilityDto dto)
         {
+            _logger.LogInformation("Creando disponibilidad de doctor");
+
             if (dto.StartTime >= dto.EndTime)
-                throw new Exception("La hora de inicio debe ser menor que la hora de fin");
+            {
+                _logger.LogWarning("Hora inválida: StartTime >= EndTime");
+                throw new NotFoundException("La hora de inicio debe ser menor que la hora de fin");
+            }
 
             var entity = new DoctorAvailability
             {
@@ -31,7 +41,11 @@ namespace MedAgenda.Application.Services
                 EndTime = dto.EndTime
             };
 
+            _logger.LogInformation("Guardando disponibilidad en base de datos");
+
             await _repository.AddAsync(entity);
+
+            _logger.LogInformation("Disponibilidad creada correctamente");
 
             return new DoctorAvailabilityDto
             {
@@ -45,17 +59,31 @@ namespace MedAgenda.Application.Services
 
         public async Task<DoctorAvailabilityDto?> UpdateAvailabilityAsync(UpdateDoctorAvailabilityDto dto)
         {
+            _logger.LogInformation("Actualizando disponibilidad con ID: {Id}", dto.Id);
+
             var entity = await _repository.GetByIdAsync(dto.Id);
-            if (entity == null) return null;
+
+            if (entity == null)
+            {
+                _logger.LogWarning("Disponibilidad no encontrada con ID: {Id}", dto.Id);
+                throw new NotFoundException("Disponibilidad no encontrada");
+            }
 
             if (dto.StartTime >= dto.EndTime)
-                throw new Exception("La hora de inicio debe ser menor que la hora de fin");
+            {
+                _logger.LogWarning("Hora inválida en actualización");
+                throw new NotFoundException("La hora de inicio debe ser menor que la hora de fin");
+            }
 
             entity.Day = dto.Day;
             entity.StartTime = dto.StartTime;
             entity.EndTime = dto.EndTime;
 
+            _logger.LogInformation("Guardando cambios de disponibilidad");
+
             await _repository.UpdateAsync(entity);
+
+            _logger.LogInformation("Disponibilidad actualizada correctamente");
 
             return new DoctorAvailabilityDto
             {
@@ -69,17 +97,34 @@ namespace MedAgenda.Application.Services
 
         public async Task<bool> DeleteAvailabilityAsync(int id)
         {
+            _logger.LogInformation("Eliminando disponibilidad con ID: {Id}", id);
+
             var entity = await _repository.GetByIdAsync(id);
-            if (entity == null) return false;
+
+            if (entity == null)
+            {
+                _logger.LogWarning("Disponibilidad no encontrada con ID: {Id}", id);
+                return false;
+            }
 
             await _repository.DeleteAsync(entity);
+
+            _logger.LogInformation("Disponibilidad eliminada correctamente");
+
             return true;
         }
 
         public async Task<DoctorAvailabilityDto?> GetAvailabilityByIdAsync(int id)
         {
+            _logger.LogInformation("Obteniendo disponibilidad con ID: {Id}", id);
+
             var entity = await _repository.GetByIdAsync(id);
-            if (entity == null) return null;
+
+            if (entity == null)
+            {
+                _logger.LogWarning("Disponibilidad no encontrada con ID: {Id}", id);
+                throw new NotFoundException("Disponibilidad no encontrada");
+            }
 
             return new DoctorAvailabilityDto
             {
@@ -93,7 +138,12 @@ namespace MedAgenda.Application.Services
 
         public async Task<IEnumerable<DoctorAvailabilityDto>> GetAvailabilitiesByDoctorAsync(int doctorId)
         {
+            _logger.LogInformation("Obteniendo disponibilidades por doctor: {DoctorId}", doctorId);
+
             var data = await _repository.GetByDoctorIdAsync(doctorId);
+
+            _logger.LogInformation("Cantidad de disponibilidades: {Count}", data.Count());
+
             return data.Select(x => new DoctorAvailabilityDto
             {
                 Id = x.Id,
