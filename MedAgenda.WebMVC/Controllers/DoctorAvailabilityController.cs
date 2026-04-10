@@ -1,4 +1,5 @@
-﻿using MedAgenda.WebMVC.Services;
+﻿using MedAgenda.WebMVC.Models;
+using MedAgenda.WebMVC.Services;
 using Microsoft.AspNetCore.Mvc;
 
 public class DoctorAvailabilityController : Controller
@@ -14,5 +15,13 @@ public class DoctorAvailabilityController : Controller
     {
         var data = await _service.GetAllAsync();
         return View(data);
+    }
+
+    
+    [HttpPost]
+    public async Task<IActionResult> Create(DoctorAvailabilityDTO dto)
+    {
+        await _service.CreateAsync(dto);
+        return RedirectToAction("Index");
     }
 }
