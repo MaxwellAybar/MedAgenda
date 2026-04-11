@@ -1,0 +1,19 @@
+﻿@model IEnumerable<dynamic>
+
+<h2>Listado</h2>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>ID</th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model)
+        {
+            <tr>
+                <td>@item.Id</td>
+            </tr>
+        }
+    </tbody>
+</table>
