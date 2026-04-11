@@ -1,19 +1,10 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<MedAgenda.WebMVC.Models.SystemHistoryDto>
 
-<h2>Listado</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-            </tr>
-        }
-    </tbody>
-</table>
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@item.Id</td>
+        <td>@item.Action</td>
+        @* <td>@item.CreatedAt</td> <-- Comenta esta línea si falla *@
+    </tr>
+}

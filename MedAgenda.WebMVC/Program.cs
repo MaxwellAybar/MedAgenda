@@ -1,37 +1,33 @@
 ﻿using MedAgenda.WebMVC.Services;
-using MedAgenda.Persistence.Context;
-using MedAgenda.Persistence.Repositories;
-using MedAgenda.Persistence.Interfaces;
-using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
-
-// DB
-builder.Services.AddDbContext<MedAgendaContext>(options =>
-    options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
-
-
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<IMedicalSpecialtyRepository, MedicalSpecialtyRepository>();
-builder.Services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
-builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
 
 
 builder.Services.AddControllersWithViews();
 
 
-builder.Services.AddHttpClient<DoctorAvailabilityService>();
-builder.Services.AddHttpClient<PatientService>();
-builder.Services.AddHttpClient<AppointmentService>();
-builder.Services.AddHttpClient<ProviderService>();
-builder.Services.AddHttpClient<MedicalSpecialtyService>();
-builder.Services.AddHttpClient<NotificationService>();
-builder.Services.AddHttpClient<SystemHistoryService>();
-builder.Services.AddHttpClient<SystemReportsService>();
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
+
+if (string.IsNullOrEmpty(apiBaseUrl))
+{
+  
+    apiBaseUrl = "https://localhost:7001/api/";
+}
+
+
+void ConfigureClient(HttpClient client) => client.BaseAddress = new Uri(apiBaseUrl);
+
+builder.Services.AddHttpClient<PatientService>(ConfigureClient);
+builder.Services.AddHttpClient<ProviderService>(ConfigureClient);
+builder.Services.AddHttpClient<AppointmentService>(ConfigureClient);
+builder.Services.AddHttpClient<NotificationService>(ConfigureClient);
+builder.Services.AddHttpClient<MedicalSpecialtyService>(ConfigureClient);
+builder.Services.AddHttpClient<SystemHistoryService>(ConfigureClient);
+builder.Services.AddHttpClient<SystemReportsService>(ConfigureClient);
+builder.Services.AddHttpClient<DoctorAvailabilityService>(ConfigureClient); 
 
 var app = builder.Build();
+
 
 if (!app.Environment.IsDevelopment())
 {
@@ -43,6 +39,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",

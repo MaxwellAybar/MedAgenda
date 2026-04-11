@@ -1,19 +1,11 @@
-﻿@model IEnumerable<dynamic>
+﻿@model IEnumerable<MedAgenda.WebMVC.Models.AppointmentDto>
 
-<h2>Listado</h2>
-
-<table class="table">
-    <thead>
-        <tr>
-            <th>ID</th>
-        </tr>
-    </thead>
-    <tbody>
-        @foreach (var item in Model)
-        {
-            <tr>
-                <td>@item.Id</td>
-            </tr>
-        }
-    </tbody>
-</table>
+@foreach (var item in Model)
+{
+    <tr>
+        <td>@item.Id</td>
+        <td>@item.AppointmentDate.ToShortDateString()</td>
+        <td>@item.Status</td>
+        <td>@item.PatientId</td> @* Cambiado PatientName por PatientId *@
+    </tr>
+}
