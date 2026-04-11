@@ -18,7 +18,7 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("Patient"); // Solo el nombre del recurso
+                var response = await _httpClient.GetAsync("Patient"); 
                 response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
                 return JsonSerializer.Deserialize<List<PatientDto>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
