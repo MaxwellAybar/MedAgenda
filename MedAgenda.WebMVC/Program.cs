@@ -27,6 +27,9 @@ builder.Services.AddHttpClient<PatientService>();
 builder.Services.AddHttpClient<AppointmentService>();
 builder.Services.AddHttpClient<ProviderService>();
 builder.Services.AddHttpClient<MedicalSpecialtyService>();
+builder.Services.AddHttpClient<NotificationService>();
+builder.Services.AddHttpClient<SystemHistoryService>();
+builder.Services.AddHttpClient<SystemReportsService>();
 
 var app = builder.Build();
 
