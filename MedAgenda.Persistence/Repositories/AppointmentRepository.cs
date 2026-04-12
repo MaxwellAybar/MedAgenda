@@ -10,16 +10,13 @@ namespace MedAgenda.Persistence.Repositories
     public class AppointmentRepository : BaseRepository<Appointment>, IAppointmentRepository
     {
         private readonly MedAgendaContext _context;
-        private readonly IServiceProvider _serviceProvider; 
 
         public AppointmentRepository(
             MedAgendaContext context,
-            ILogger<BaseRepository<Appointment>> logger,
-            IServiceProvider serviceProvider) 
+            ILogger<BaseRepository<Appointment>> logger)
             : base(context, logger)
         {
             _context = context;
-            _serviceProvider = serviceProvider;
         }
 
         public async Task<List<Appointment>> GetByPatientIdAsync(int patientId)
@@ -36,17 +33,6 @@ namespace MedAgenda.Persistence.Repositories
                 .ToListAsync();
         }
 
-        public override async Task AddAsync(Appointment appointment)
-        {
-            
-            var availabilityRepo = (IDoctorAvailabilityRepository)_serviceProvider.GetService(typeof(IDoctorAvailabilityRepository));
-
-            var isAvailable = await availabilityRepo.IsDoctorAvailableAsync(appointment.DoctorId, appointment.AppointmentDate);
-
-            if (!isAvailable)
-                throw new Exception("El doctor no está disponible en esa fecha");
-
-            await base.AddAsync(appointment);
-        }
+  
     }
 }

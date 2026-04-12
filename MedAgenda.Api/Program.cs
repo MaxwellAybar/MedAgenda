@@ -9,17 +9,6 @@ using Microsoft.EntityFrameworkCore;
 var builder = WebApplication.CreateBuilder(args);
 
 
-builder.Services.AddCors(options =>
-{
-    options.AddPolicy("AllowAll",
-        policy =>
-        {
-            policy.AllowAnyOrigin()
-                  .AllowAnyMethod()
-                  .AllowAnyHeader();
-        });
-});
-
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
@@ -28,18 +17,26 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MedAgendaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+builder.Services.AddCors(options => {
+    options.AddPolicy("AllowAll", policy => {
+        policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
+    });
+});
+
+
+
 
 builder.Services.AddScoped<IUserRepository, UserRepository>();
 builder.Services.AddScoped<IMedicalSpecialtyRepository, MedicalSpecialtyRepository>();
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>();
+builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>(); 
 builder.Services.AddScoped<IPatientRepository, PatientRepository>();
 builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
 builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>(); 
+builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
 builder.Services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
 builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
 
-
+// Capa de Aplicación (Servicios)
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IMedicalSpecialtyService, MedicalSpecialtyService>();
 builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
@@ -55,10 +52,10 @@ if (app.Environment.IsDevelopment())
     app.UseSwaggerUI();
 }
 
-
 app.UseCors("AllowAll");
 app.UseHttpsRedirection();
 app.UseAuthorization();
+
 
 app.UseExceptionHandler(errorApp =>
 {
@@ -82,7 +79,7 @@ app.UseExceptionHandler(errorApp =>
         }
     });
 });
-app.MapControllers();
 
+app.MapControllers();
 
 app.Run();
