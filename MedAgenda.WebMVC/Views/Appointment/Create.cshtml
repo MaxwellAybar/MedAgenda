@@ -1,0 +1,52 @@
+﻿@model MedAgenda.WebMVC.Models.AppointmentDto
+
+@{
+    ViewData["Title"] = "Nueva Cita Médica";
+}
+
+<div class="container mt-4">
+    <h2>Nueva Cita Médica</h2>
+    <hr />
+
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Create" method="post">
+                @Html.AntiForgeryToken()
+
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                <div class="mb-3">
+                    <label asp-for="PatientId" class="form-label">ID Paciente</label>
+                    <input asp-for="PatientId" type="number" class="form-control" placeholder="Ingrese el ID del paciente" required />
+                    <span asp-validation-for="PatientId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="DoctorId" class="form-label">ID Doctor</label>
+                    <input asp-for="DoctorId" type="number" class="form-control" placeholder="Ingrese el ID del doctor" required />
+                    <span asp-validation-for="DoctorId" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="AppointmentDate" class="form-label">Fecha y Hora</label>
+                    <input asp-for="AppointmentDate" type="datetime-local" class="form-control" required />
+                    <span asp-validation-for="AppointmentDate" class="text-danger"></span>
+                </div>
+
+                <div class="mb-3">
+                    <label asp-for="Notes" class="form-label">Notas / Observaciones</label>
+                    <textarea asp-for="Notes" class="form-control" rows="3" placeholder="Opcional..."></textarea>
+                    <span asp-validation-for="Notes" class="text-danger"></span>
+                </div>
+
+                @*  *@
+                <input type="hidden" asp-for="Status" value="Pendiente" />
+
+                <div class="mt-4">
+                    <button type="submit" class="btn btn-primary">Registrar Cita</button>
+                    <a asp-action="Index" class="btn btn-outline-secondary">Volver al listado</a>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>

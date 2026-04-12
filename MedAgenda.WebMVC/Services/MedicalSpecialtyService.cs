@@ -1,5 +1,5 @@
 ﻿using MedAgenda.WebMVC.Models;
-using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace MedAgenda.WebMVC.Services
 {
@@ -18,16 +18,19 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("MedicalSpecialty");
-                response.EnsureSuccessStatusCode();
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<MedicalSpecialtyDto>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                return await _httpClient.GetFromJsonAsync<List<MedicalSpecialtyDto>>("MedicalSpecialty") ?? new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener especialidades");
-                return new List<MedicalSpecialtyDto>();
+                return new();
             }
+        }
+
+        public async Task<bool> CreateAsync(MedicalSpecialtyDto dto)
+        {
+            var response = await _httpClient.PostAsJsonAsync("MedicalSpecialty", dto);
+            return response.IsSuccessStatusCode;
         }
     }
 }

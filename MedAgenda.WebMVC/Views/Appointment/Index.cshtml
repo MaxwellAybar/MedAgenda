@@ -1,11 +1,49 @@
 ﻿@model IEnumerable<MedAgenda.WebMVC.Models.AppointmentDto>
 
-@foreach (var item in Model)
-{
-    <tr>
-        <td>@item.Id</td>
-        <td>@item.AppointmentDate.ToShortDateString()</td>
-        <td>@item.Status</td>
-        <td>@item.PatientId</td> @* Cambiado PatientName por PatientId *@
-    </tr>
+@{
+    ViewData["Title"] = "Gestión de Citas";
 }
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <h1>Gestión de Citas</h1>
+    <a asp-action="Create" class="btn btn-primary">Nueva Cita</a>
+</div>
+
+<table class="table table-hover table-bordered">
+    <thead class="table-info">
+        <tr>
+            <th>ID</th>
+            <th>Fecha</th>
+            <th>Estado</th>
+            <th>ID Paciente</th>
+            <th>Doctor</th>
+        </tr>
+    </thead>
+    <tbody>
+        @if (Model != null && Model.Any())
+        {
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.AppointmentDate.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>
+                        <span class="badge @(item.Status == "Pendiente" ? "bg-warning text-dark" : "bg-success")">
+                            @item.Status
+                        </span>
+                    </td>
+                    <td>@item.PatientId</td>
+                    <td>@item.DoctorId</td>
+                </tr>
+            }
+        }
+        else
+        {
+            <tr>
+                <td colspan="5" class="text-center text-muted py-4">
+                    <i class="bi bi-info-circle"></i> No hay citas registradas en el sistema.
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>

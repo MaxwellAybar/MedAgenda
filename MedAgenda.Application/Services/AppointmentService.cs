@@ -4,6 +4,7 @@ using MedAgenda.Application.Interfaces;
 using MedAgenda.Domain.Entities;
 using MedAgenda.Persistence.Interfaces;
 using Microsoft.Extensions.Logging;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
@@ -26,33 +27,70 @@ namespace MedAgenda.Application.Services
             _logger = logger;
         }
 
-        public async Task<AppointmentDto> RequestAppointmentAsync(CreateAppointmentDto dto)
+        public async Task<IEnumerable<AppointmentDto>> GetAllAppointmentsAsync()
         {
-            _logger.LogInformation("Solicitando cita médica");
+            var appointments = await _repository.GetAllAsync();
+            return appointments.Select(x => new AppointmentDto
+            {
+                Id = x.Id,
+                PatientId = x.PatientId,
+                DoctorId = x.DoctorId,
+                AppointmentDate = x.AppointmentDate,
+                Status = x.Status ?? "Pendiente",
+                Notes = x.Notes ?? string.Empty
+            });
+        }
+
+        public async Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentDto dto)
+        {
+            _logger.LogInformation("Intentando crear cita para Paciente {P} y Doctor {D}", dto.PatientId, dto.DoctorId);
+
 
             bool isAvailable = await _availabilityRepository
                 .IsDoctorAvailableAsync(dto.DoctorId, dto.AppointmentDate);
 
             if (!isAvailable)
             {
-                _logger.LogWarning("Doctor no disponible para la fecha solicitada");
-                throw new NotFoundException("El médico no está disponible en esta fecha/hora");
+                throw new NotFoundException("El médico no tiene disponibilidad programada para esta fecha/hora.");
             }
 
+           
             var entity = new Appointment
             {
                 PatientId = dto.PatientId,
-                DoctorId = dto.DoctorId,
+                DoctorId = dto.DoctorId, 
                 AppointmentDate = dto.AppointmentDate,
-                Status = "Pendiente",
-                Notes = dto.Notes
+                
+                Status = string.IsNullOrWhiteSpace(dto.Status) ? "Pendiente" : dto.Status,
+                Notes = dto.Notes ?? "Sin observaciones"
             };
 
-            _logger.LogInformation("Guardando cita en base de datos");
+            try
+            {
+                await _repository.AddAsync(entity);
+            }
+            catch (Exception ex)
+            {
+                var message = ex.InnerException?.Message ?? ex.Message;
+                _logger.LogError("Error al persistir en la BD: {Msg}", message);
+                throw new Exception($"Error de base de datos: {message}");
+            }
 
-            await _repository.AddAsync(entity);
+            return new AppointmentDto
+            {
+                Id = entity.Id,
+                PatientId = entity.PatientId,
+                DoctorId = entity.DoctorId,
+                AppointmentDate = entity.AppointmentDate,
+                Status = entity.Status,
+                Notes = entity.Notes
+            };
+        }
 
-            _logger.LogInformation("Cita creada correctamente");
+        public async Task<AppointmentDto> GetAppointmentByIdAsync(int id)
+        {
+            var entity = await _repository.GetByIdAsync(id);
+            if (entity == null) throw new NotFoundException("Cita no encontrada");
 
             return new AppointmentDto
             {
@@ -67,38 +105,23 @@ namespace MedAgenda.Application.Services
 
         public async Task<AppointmentDto> UpdateAppointmentAsync(UpdateAppointmentDto dto)
         {
-            _logger.LogInformation("Actualizando cita con ID: {Id}", dto.Id);
-
             var entity = await _repository.GetByIdAsync(dto.Id);
-
-            if (entity == null)
-            {
-                _logger.LogWarning("Cita no encontrada con ID: {Id}", dto.Id);
-                throw new NotFoundException("Cita no encontrada");
-            }
+            if (entity == null) throw new NotFoundException("Cita no encontrada");
 
             if (dto.AppointmentDate.HasValue)
             {
                 bool isAvailable = await _availabilityRepository
                     .IsDoctorAvailableAsync(entity.DoctorId, dto.AppointmentDate.Value);
 
-                if (!isAvailable)
-                {
-                    _logger.LogWarning("Doctor no disponible para nueva fecha");
-                    throw new NotFoundException("El médico no está disponible en la nueva fecha/hora");
-                }
+                if (!isAvailable) throw new NotFoundException("Médico no disponible en la nueva fecha.");
 
                 entity.AppointmentDate = dto.AppointmentDate.Value;
             }
 
-            entity.Status = dto.Status;
-            entity.Notes = dto.Notes;
-
-            _logger.LogInformation("Guardando cambios de la cita");
+            entity.Status = dto.Status ?? entity.Status;
+            entity.Notes = dto.Notes ?? entity.Notes;
 
             await _repository.UpdateAsync(entity);
-
-            _logger.LogInformation("Cita actualizada correctamente");
 
             return new AppointmentDto
             {
@@ -113,54 +136,17 @@ namespace MedAgenda.Application.Services
 
         public async Task<bool> CancelAppointmentAsync(int id)
         {
-            _logger.LogInformation("Cancelando cita con ID: {Id}", id);
-
             var entity = await _repository.GetByIdAsync(id);
-
-            if (entity == null)
-            {
-                _logger.LogWarning("Cita no encontrada con ID: {Id}", id);
-                return false;
-            }
+            if (entity == null) return false;
 
             entity.Status = "Cancelada";
-
             await _repository.UpdateAsync(entity);
-
-            _logger.LogInformation("Cita cancelada correctamente");
-
             return true;
-        }
-
-        public async Task<AppointmentDto> GetAppointmentByIdAsync(int id)
-        {
-            _logger.LogInformation("Obteniendo cita con ID: {Id}", id);
-
-            var entity = await _repository.GetByIdAsync(id);
-
-            if (entity == null)
-            {
-                _logger.LogWarning("Cita no encontrada con ID: {Id}", id);
-                throw new NotFoundException("Cita no encontrada");
-            }
-
-            return new AppointmentDto
-            {
-                Id = entity.Id,
-                PatientId = entity.PatientId,
-                DoctorId = entity.DoctorId,
-                AppointmentDate = entity.AppointmentDate,
-                Status = entity.Status,
-                Notes = entity.Notes
-            };
         }
 
         public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByPatientAsync(int patientId)
         {
-            _logger.LogInformation("Obteniendo citas por paciente: {PatientId}", patientId);
-
             var data = await _repository.GetByPatientIdAsync(patientId);
-
             return data.Select(x => new AppointmentDto
             {
                 Id = x.Id,
@@ -174,10 +160,7 @@ namespace MedAgenda.Application.Services
 
         public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByDoctorAsync(int doctorId)
         {
-            _logger.LogInformation("Obteniendo citas por doctor: {DoctorId}", doctorId);
-
             var data = await _repository.GetByDoctorIdAsync(doctorId);
-
             return data.Select(x => new AppointmentDto
             {
                 Id = x.Id,

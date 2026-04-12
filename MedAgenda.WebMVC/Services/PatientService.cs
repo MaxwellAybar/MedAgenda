@@ -1,5 +1,5 @@
 ﻿using MedAgenda.WebMVC.Models;
-using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace MedAgenda.WebMVC.Services
 {
@@ -18,15 +18,31 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("Patient"); 
-                response.EnsureSuccessStatusCode();
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<PatientDto>>(json, new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                return await _httpClient.GetFromJsonAsync<List<PatientDto>>("patient") ?? new();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener pacientes");
-                return new List<PatientDto>();
+                _logger.LogError(ex, "Error al obtener la lista de pacientes.");
+                return new();
+            }
+        }
+
+        public async Task<bool> CreateAsync(PatientDto dto)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("patient", dto);
+                if (!response.IsSuccessStatusCode)
+                {
+                    var error = await response.Content.ReadAsStringAsync();
+                    _logger.LogWarning("API Error (Patient): {Error}", error);
+                }
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Fallo de conexión al crear paciente.");
+                return false;
             }
         }
     }

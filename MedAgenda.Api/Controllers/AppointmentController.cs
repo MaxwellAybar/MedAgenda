@@ -17,13 +17,16 @@ namespace MedAgenda.Api.Controllers
             _service = service;
         }
 
+       
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            var data = await _service.GetAppointmentsByPatientAsync(0); 
+          
+            var data = await _service.GetAllAppointmentsAsync();
             return Ok(data);
         }
 
+    
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
@@ -43,15 +46,18 @@ namespace MedAgenda.Api.Controllers
         {
             try
             {
-                var result = await _service.RequestAppointmentAsync(dto);
+               
+                var result = await _service.CreateAppointmentAsync(dto);
                 return Ok(result);
             }
             catch (Exception ex)
             {
+           
                 return BadRequest(ex.Message);
             }
         }
 
+       
         [HttpPut]
         public async Task<IActionResult> Put(UpdateAppointmentDto dto)
         {
@@ -66,6 +72,7 @@ namespace MedAgenda.Api.Controllers
             }
         }
 
+       
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
