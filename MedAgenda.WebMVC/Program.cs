@@ -17,10 +17,12 @@ void ConfigureClient(HttpClient client)
 }
 
 
+
 builder.Services.AddHttpClient<PatientService>(ConfigureClient);
 builder.Services.AddHttpClient<AppointmentService>(ConfigureClient);
 builder.Services.AddHttpClient<MedicalSpecialtyService>(ConfigureClient);
 builder.Services.AddHttpClient<DoctorAvailabilityService>(ConfigureClient);
+builder.Services.AddHttpClient<NotificationService>(ConfigureClient); 
 
 var app = builder.Build();
 
