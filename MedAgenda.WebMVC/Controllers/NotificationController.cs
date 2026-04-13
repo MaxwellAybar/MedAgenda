@@ -1,4 +1,5 @@
 ﻿using MedAgenda.WebMVC.Services;
+using MedAgenda.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 
 namespace MedAgenda.WebMVC.Controllers
@@ -24,10 +25,27 @@ namespace MedAgenda.WebMVC.Controllers
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al cargar notificaciones");
-                return View(new List<MedAgenda.WebMVC.Models.NotificationDto>());
+                return View(new List<NotificationDto>());
             }
         }
 
+        public IActionResult Create()
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Create(NotificationDto dto)
+        {
+            var success = await _service.CreateAsync(dto);
+            if (success)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+            return View(dto);
+        }
+
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             try

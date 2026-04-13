@@ -20,7 +20,9 @@ namespace MedAgenda.Application.Services
             return data.Select(x => new ProviderDto
             {
                 Id = x.Id,
-                Name = $"{x.FirstName} {x.LastName}".Trim()
+                Name = $"{x.FirstName} {x.LastName}".Trim(),
+                Email = x.Email,
+                Phone = x.Phone
             });
         }
 
@@ -28,22 +30,29 @@ namespace MedAgenda.Application.Services
         {
             var x = await _repository.GetByIdAsync(id);
             if (x == null) return null;
-            return new ProviderDto { Id = x.Id, Name = $"{x.FirstName} {x.LastName}".Trim() };
+            return new ProviderDto
+            {
+                Id = x.Id,
+                Name = $"{x.FirstName} {x.LastName}".Trim(),
+                Email = x.Email,
+                Phone = x.Phone
+            };
         }
 
         public async Task<ProviderDto> CreateProviderAsync(CreateProviderDto dto)
         {
-            var names = dto.Name.Split(' ');
+            var parts = dto.Name.Split(' ', 2);
             var entity = new Provider
             {
-                FirstName = names[0],
-                LastName = names.Length > 1 ? string.Join(" ", names.Skip(1)) : string.Empty,
+                FirstName = parts[0],
+                LastName = parts.Length > 1 ? parts[1] : " ",
                 Email = dto.Email,
                 Phone = dto.Phone,
                 MedicalSpecialtyId = 1
             };
+
             await _repository.AddAsync(entity);
-            return new ProviderDto { Id = entity.Id, Name = dto.Name };
+            return new ProviderDto { Id = entity.Id, Name = dto.Name, Email = entity.Email, Phone = entity.Phone };
         }
 
         public async Task<ProviderDto> UpdateProviderAsync(UpdateProviderDto dto)
@@ -51,12 +60,15 @@ namespace MedAgenda.Application.Services
             var entity = await _repository.GetByIdAsync(dto.Id);
             if (entity != null)
             {
-                var names = dto.Name.Split(' ');
-                entity.FirstName = names[0];
-                entity.LastName = names.Length > 1 ? string.Join(" ", names.Skip(1)) : string.Empty;
+                var parts = dto.Name.Split(' ', 2);
+                entity.FirstName = parts[0];
+                entity.LastName = parts.Length > 1 ? parts[1] : " ";
+                entity.Email = dto.Email;
+                entity.Phone = dto.Phone;
+
                 await _repository.UpdateAsync(entity);
             }
-            return new ProviderDto { Id = dto.Id, Name = dto.Name };
+            return new ProviderDto { Id = dto.Id, Name = dto.Name, Email = dto.Email, Phone = dto.Phone };
         }
 
         public async Task<bool> DeleteProviderAsync(int id)

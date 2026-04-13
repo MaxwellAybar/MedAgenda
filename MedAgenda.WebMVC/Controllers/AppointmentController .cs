@@ -34,29 +34,32 @@ namespace MedAgenda.WebMVC.Controllers
             if (ModelState.IsValid)
             {
                 var success = await _service.CreateAsync(dto);
-                if (success)
-                    return RedirectToAction(nameof(Index));
-
-                ModelState.AddModelError("", "Error al crear la cita");
+                if (success) return RedirectToAction(nameof(Index));
             }
-
             return View(dto);
         }
 
-   
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var data = await _service.GetAllAsync();
+            var appointment = data.FirstOrDefault(x => x.Id == id);
+            if (appointment == null) return NotFound();
+            return View(appointment);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(AppointmentDto dto)
         {
-            await _service.UpdateAsync(dto);
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                var success = await _service.UpdateAsync(dto);
+                if (success) return RedirectToAction(nameof(Index));
+            }
+            return View(dto);
         }
 
-       
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);

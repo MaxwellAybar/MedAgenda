@@ -1,5 +1,5 @@
 ﻿using MedAgenda.WebMVC.Models;
-using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace MedAgenda.WebMVC.Services
 {
@@ -18,23 +18,40 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("Provider");
-
-                if (!response.IsSuccessStatusCode)
-                {
-                    _logger.LogWarning("API respondio con error: {StatusCode}", response.StatusCode);
-                    return new List<ProviderDto>();
-                }
-
-                var json = await response.Content.ReadAsStringAsync();
-
-                return JsonSerializer.Deserialize<List<ProviderDto>>(json,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                return await _httpClient.GetFromJsonAsync<List<ProviderDto>>("Provider") ?? new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener proveedores");
-                return new List<ProviderDto>();
+                return new();
+            }
+        }
+
+        public async Task<bool> CreateAsync(ProviderDto dto)
+        {
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Provider", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al crear proveedor");
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateAsync(ProviderDto dto)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync($"Provider/{dto.Id}", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar proveedor");
+                return false;
             }
         }
 

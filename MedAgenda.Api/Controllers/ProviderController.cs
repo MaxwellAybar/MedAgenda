@@ -1,8 +1,6 @@
-﻿using MedAgenda.Application.Dtos.Provider;
+﻿using Microsoft.AspNetCore.Mvc;
 using MedAgenda.Application.Interfaces;
-using MedAgenda.Application.Services;
-using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
+using MedAgenda.Application.Dtos.Provider;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -20,27 +18,21 @@ namespace MedAgenda.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _service.GetAllProvidersAsync();
-            return Ok(data);
-        }
-
-        [HttpGet("{id}")]
-        public async Task<IActionResult> GetById(int id)
-        {
-            var data = await _service.GetProviderByIdAsync(id);
-            return Ok(data);
+            return Ok(await _service.GetAllProvidersAsync());
         }
 
         [HttpPost]
-        public async Task<IActionResult> Post(CreateProviderDto dto)
+        public async Task<IActionResult> Create([FromBody] CreateProviderDto dto)
         {
-            await _service.CreateProviderAsync(dto);
-            return Ok();
+            if (!ModelState.IsValid) return BadRequest(ModelState);
+            var result = await _service.CreateProviderAsync(dto);
+            return Ok(result);
         }
 
         [HttpPut]
-        public async Task<IActionResult> Put(UpdateProviderDto dto)
+        public async Task<IActionResult> Update([FromBody] UpdateProviderDto dto)
         {
+            if (!ModelState.IsValid) return BadRequest(ModelState);
             await _service.UpdateProviderAsync(dto);
             return Ok();
         }
@@ -49,8 +41,7 @@ namespace MedAgenda.Api.Controllers
         public async Task<IActionResult> Delete(int id)
         {
             var result = await _service.DeleteProviderAsync(id);
-            if (!result) return NotFound("Proveedor no encontrado");
-            return Ok();
+            return result ? NoContent() : NotFound();
         }
     }
 }

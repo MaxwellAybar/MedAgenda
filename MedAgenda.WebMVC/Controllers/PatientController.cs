@@ -7,17 +7,16 @@ namespace MedAgenda.WebMVC.Controllers
     public class PatientController : Controller
     {
         private readonly PatientService _service;
-        private readonly ILogger<PatientController> _logger;
 
-        public PatientController(PatientService service, ILogger<PatientController> logger)
+        public PatientController(PatientService service)
         {
             _service = service;
-            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
         {
-            return View(await _service.GetAllAsync());
+            var data = await _service.GetAllAsync();
+            return View(data);
         }
 
         public IActionResult Create()
@@ -28,22 +27,29 @@ namespace MedAgenda.WebMVC.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(PatientDto dto)
         {
-            await _service.CreateAsync(dto);
-            return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid) return View(dto);
+            var success = await _service.CreateAsync(dto);
+            if (success) return RedirectToAction(nameof(Index));
+            return View(dto);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var patient = await _service.GetByIdAsync(id);
+            if (patient == null) return NotFound();
+            return View(patient);
         }
 
         [HttpPost]
         public async Task<IActionResult> Edit(PatientDto dto)
         {
-            await _service.UpdateAsync(dto);
-            return RedirectToAction(nameof(Index));
+            if (!ModelState.IsValid) return View(dto);
+            var success = await _service.UpdateAsync(dto);
+            if (success) return RedirectToAction(nameof(Index));
+            return View(dto);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);

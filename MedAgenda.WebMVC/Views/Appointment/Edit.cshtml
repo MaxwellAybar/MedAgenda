@@ -1,0 +1,31 @@
+﻿@model MedAgenda.WebMVC.Models.AppointmentDto
+
+<h2>Re-programar Cita</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="DoctorId" />
+    <input type="hidden" asp-for="PatientId" />
+
+    <div class="mb-3">
+        <label class="form-label">Fecha y Hora</label>
+        <input asp-for="AppointmentDate" class="form-control" type="datetime-local" required />
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Estado</label>
+        <select asp-for="Status" class="form-select">
+            <option value="Pendiente">Pendiente</option>
+            <option value="Confirmada">Confirmada</option>
+            <option value="Cancelada">Cancelada</option>
+        </select>
+    </div>
+
+    <div class="mb-3">
+        <label class="form-label">Notas / Observaciones</label>
+        <textarea asp-for="Notes" class="form-control" rows="3"></textarea>
+    </div>
+
+    <button type="submit" class="btn btn-success">Actualizar Cita</button>
+    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+</form>>

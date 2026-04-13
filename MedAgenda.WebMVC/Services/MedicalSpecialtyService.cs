@@ -29,20 +29,44 @@ namespace MedAgenda.WebMVC.Services
 
         public async Task<bool> CreateAsync(MedicalSpecialtyDto dto)
         {
-            var response = await _httpClient.PostAsJsonAsync("MedicalSpecialty", dto);
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("MedicalSpecialty", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al crear especialidad");
+                return false;
+            }
         }
 
         public async Task<bool> UpdateAsync(MedicalSpecialtyDto dto)
         {
-            var response = await _httpClient.PutAsJsonAsync("MedicalSpecialty", dto);
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("MedicalSpecialty", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar especialidad");
+                return false;
+            }
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"MedicalSpecialty/{id}");
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"MedicalSpecialty/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar especialidad");
+                return false;
+            }
         }
     }
 }

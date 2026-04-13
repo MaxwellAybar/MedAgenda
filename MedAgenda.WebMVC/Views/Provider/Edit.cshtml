@@ -1,0 +1,21 @@
+﻿@model MedAgenda.WebMVC.Models.ProviderDto
+
+<h2>Editar Proveedor</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3">
+        <label class="form-label">Nombre Completo</label>
+        <input asp-for="Name" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Email</label>
+        <input asp-for="Email" class="form-control" type="email" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Teléfono</label>
+        <input asp-for="Phone" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-success">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

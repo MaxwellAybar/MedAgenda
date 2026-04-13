@@ -15,7 +15,8 @@ namespace MedAgenda.WebMVC.Controllers
 
         public async Task<IActionResult> Index()
         {
-            return View(await _service.GetAllAsync());
+            var data = await _service.GetAllAsync();
+            return View(data);
         }
 
         public IActionResult Create()
@@ -24,24 +25,38 @@ namespace MedAgenda.WebMVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(MedicalSpecialtyDto dto)
         {
-            await _service.CreateAsync(dto);
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                var success = await _service.CreateAsync(dto);
+                if (success) return RedirectToAction(nameof(Index));
+            }
+            return View(dto);
         }
 
-        public IActionResult Edit(int id)
+        public async Task<IActionResult> Edit(int id)
         {
-            return View();
+            var data = await _service.GetAllAsync();
+            var specialty = data.FirstOrDefault(x => x.Id == id);
+            if (specialty == null) return NotFound();
+            return View(specialty);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(MedicalSpecialtyDto dto)
         {
-            await _service.UpdateAsync(dto);
-            return RedirectToAction(nameof(Index));
+            if (ModelState.IsValid)
+            {
+                var success = await _service.UpdateAsync(dto);
+                if (success) return RedirectToAction(nameof(Index));
+            }
+            return View(dto);
         }
 
+        [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);

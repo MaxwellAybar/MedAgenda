@@ -10,6 +10,7 @@
                 <thead>
                     <tr>
                         <th>ID</th>
+                        <th>Usuario ID</th> @* Agregamos esta cabecera *@
                         <th>Título del Reporte</th>
                         <th>Descripción</th>
                         <th>Fecha de Creación</th>
@@ -22,6 +23,7 @@
                         {
                             <tr>
                                 <td>@item.Id</td>
+                                <td>@item.UserId</td> @* Agregamos el dato del UserId *@
                                 <td><strong>@item.Title</strong></td>
                                 <td>@item.Description</td>
                                 <td>@item.CreatedDate.ToShortDateString()</td>
@@ -31,11 +33,11 @@
                     else
                     {
                         <tr>
-                            <td colspan="4" class="text-center">No se han encontrado reportes en el sistema.</td>
+                            <td colspan="5" class="text-center">No se han encontrado reportes en el sistema.</td>
                         </tr>
                     }
                 </tbody>
             </table>
         </div>
     </div>
-</div>>
+</div>

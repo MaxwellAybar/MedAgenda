@@ -1,0 +1,17 @@
+﻿@model MedAgenda.WebMVC.Models.PatientDto
+
+<h2>Editar Paciente</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <div class="mb-3">
+        <label class="form-label">Nombre</label>
+        <input asp-for="FirstName" class="form-control" required />
+    </div>
+    <div class="mb-3">
+        <label class="form-label">Apellido</label>
+        <input asp-for="LastName" class="form-control" required />
+    </div>
+    <button type="submit" class="btn btn-success">Actualizar</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>

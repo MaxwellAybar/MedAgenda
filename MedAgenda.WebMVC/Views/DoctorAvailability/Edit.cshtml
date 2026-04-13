@@ -1,0 +1,22 @@
+﻿@model MedAgenda.WebMVC.Models.NotificationDto
+
+<h2>Editar Notificación</h2>
+
+<form asp-action="Edit" method="post">
+    <input type="hidden" asp-for="Id" />
+    <input type="hidden" asp-for="UserId" />
+    <input type="hidden" asp-for="SentDate" />
+
+    <div class="mb-3">
+        <label class="form-label">Mensaje</label>
+        <textarea asp-for="Message" class="form-control" rows="4" required></textarea>
+    </div>
+
+    <div class="form-check mb-3">
+        <input asp-for="IsRead" class="form-check-input" type="checkbox" />
+        <label class="form-check-label">Marcar como leída</label>
+    </div>
+
+    <button type="submit" class="btn btn-success">Guardar Cambios</button>
+    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
+</form>
