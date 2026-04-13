@@ -1,45 +1,48 @@
 ﻿@model List<MedAgenda.WebMVC.Models.DoctorAvailabilityDTO>
 
 @{
-    ViewData["Title"] = "Doctor Availability";
+    ViewData["Title"] = "Disponibilidad Médica";
 }
 
-<h2>Doctor Availability</h2>
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Disponibilidad de Doctores</h2>
+    <a asp-action="Create" class="btn btn-primary">
+        + Nueva Disponibilidad
+    </a>
+</div>
 
-<form asp-action="Create" method="post">
-    <div>
-        <label>Provider Id:</label>
-        <input type="number" name="ProviderId" />
-    </div>
-
-    <div>
-        <label>Day:</label>
-        <input type="number" name="Day" />
-    </div>
-
-    <div>
-        <label>Start Time:</label>
-        <input type="time" name="StartTime" />
-    </div>
-
-    <div>
-        <label>End Time:</label>
-        <input type="time" name="EndTime" />
-    </div>
-
-    <br />
-    <button type="submit">Guardar</button>
-</form>
-
-<hr />
-
-<h3>Lista</h3>
-
-<ul>
-    @foreach (var item in Model)
-    {
-        <li>
-            ID: @item.Id - Day: @item.Day (@item.StartTime - @item.EndTime)
-        </li>
-    }
-</ul>
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Doctor (ProviderId)</th>
+                <th>Día</th>
+                <th>Horario</th>
+                <th>Acciones</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td>@item.Id</td>
+                    <td>@item.ProviderId</td>
+                    <td>@item.Day</td>
+                    <td>@item.StartTime - @item.EndTime</td>
+                    <td>
+                        <form asp-action="Delete" asp-route-id="@item.Id" method="post" onsubmit="return confirm('¿Seguro que desea eliminar esta disponibilidad?');">
+                            <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            @if (!Model.Any())
+            {
+                <tr>
+                    <td colspan="5" class="text-center">No hay disponibilidades registradas.</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+</div>

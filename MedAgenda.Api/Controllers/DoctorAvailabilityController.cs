@@ -20,7 +20,7 @@ namespace MedAgenda.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> Get()
         {
-            
+
             var data = await _service.GetAvailabilitiesByDoctorAsync(1);
             return Ok(data);
         }
@@ -36,7 +36,7 @@ namespace MedAgenda.Api.Controllers
         [HttpPost]
         public async Task<IActionResult> Post(CreateDoctorAvailabilityDto dto)
         {
-           
+
             if (dto.StartTime >= dto.EndTime)
                 return BadRequest("La hora de inicio debe ser menor que la de fin");
 
@@ -61,8 +61,10 @@ namespace MedAgenda.Api.Controllers
             var success = await _service.DeleteAvailabilityAsync(id);
             if (!success) return NotFound("Disponibilidad no encontrada");
 
-           
+
             return Ok(new { message = "Disponibilidad eliminada con éxito" });
         }
+
+
     }
 }

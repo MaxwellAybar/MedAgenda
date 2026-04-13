@@ -1,7 +1,5 @@
 ﻿using MedAgenda.WebMVC.Models;
-using System.Text;
-using System.Text.Json;
-using Microsoft.Extensions.Logging;
+using System.Net.Http.Json;
 
 namespace MedAgenda.WebMVC.Services
 {
@@ -20,18 +18,11 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("DoctorAvailability");
-
-                if (!response.IsSuccessStatusCode)
-                    return new();
-
-                var json = await response.Content.ReadAsStringAsync();
-                return JsonSerializer.Deserialize<List<DoctorAvailabilityDTO>>(json,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
+                return await _httpClient.GetFromJsonAsync<List<DoctorAvailabilityDTO>>("DoctorAvailability") ?? new();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener disponibilidades");
+                _logger.LogError(ex, "Error GetAllAsync");
                 return new();
             }
         }
@@ -40,26 +31,20 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.PostAsJsonAsync("DoctorAvailability", dto);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al crear disponibilidad");
-                return false;
-            }
-        }
+                var data = new
+                {
+                    doctorId = dto.ProviderId,
+                    day = dto.Day,
+                    startTime = dto.StartTime,
+                    endTime = dto.EndTime
+                };
 
-        public async Task<bool> UpdateAsync(DoctorAvailabilityDTO dto)
-        {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync("DoctorAvailability", dto);
+                var response = await _httpClient.PostAsJsonAsync("DoctorAvailability", data);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al actualizar disponibilidad");
+                _logger.LogError(ex, "Error CreateAsync");
                 return false;
             }
         }
@@ -73,7 +58,7 @@ namespace MedAgenda.WebMVC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al eliminar disponibilidad");
+                _logger.LogError(ex, "Error DeleteAsync");
                 return false;
             }
         }
