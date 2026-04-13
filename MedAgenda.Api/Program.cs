@@ -44,6 +44,7 @@ builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<ISystemReportsService, SystemReportsService>();
 builder.Services.AddScoped<INotificationService, NotificationService>();
 builder.Services.AddScoped<ISystemHistoryService, SystemHistoryService>();
+builder.Services.AddScoped<IProviderService, ProviderService>();
 
 var app = builder.Build();
 

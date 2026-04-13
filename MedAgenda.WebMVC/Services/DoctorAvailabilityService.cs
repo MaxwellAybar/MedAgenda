@@ -31,15 +31,15 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var data = new
+                var payload = new
                 {
-                    doctorId = dto.ProviderId,
+                    providerId = dto.ProviderId,
                     day = dto.Day,
-                    startTime = dto.StartTime,
-                    endTime = dto.EndTime
+                    startTime = dto.StartTime.Length == 5 ? $"{dto.StartTime}:00" : dto.StartTime,
+                    endTime = dto.EndTime.Length == 5 ? $"{dto.EndTime}:00" : dto.EndTime
                 };
 
-                var response = await _httpClient.PostAsJsonAsync("DoctorAvailability", data);
+                var response = await _httpClient.PostAsJsonAsync("DoctorAvailability", payload);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)

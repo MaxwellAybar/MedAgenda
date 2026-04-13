@@ -7,12 +7,10 @@ namespace MedAgenda.WebMVC.Controllers
     public class DoctorAvailabilityController : Controller
     {
         private readonly DoctorAvailabilityService _service;
-        private readonly ILogger<DoctorAvailabilityController> _logger;
 
-        public DoctorAvailabilityController(DoctorAvailabilityService service, ILogger<DoctorAvailabilityController> logger)
+        public DoctorAvailabilityController(DoctorAvailabilityService service)
         {
             _service = service;
-            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
@@ -23,28 +21,26 @@ namespace MedAgenda.WebMVC.Controllers
 
         public IActionResult Create()
         {
-            return View();
+            return View(new DoctorAvailabilityDTO());
         }
 
         [HttpPost]
-        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DoctorAvailabilityDTO dto)
         {
-            if (!ModelState.IsValid) return View(dto);
-
-            if (DateTime.TryParse(dto.StartTime, out var start) && DateTime.TryParse(dto.EndTime, out var end))
+            if (dto.Day <= 0 || dto.ProviderId <= 0)
             {
-                if (start >= end)
-                {
-                    ModelState.AddModelError(string.Empty, "La hora de inicio debe ser menor a la de fin.");
-                    return View(dto);
-                }
+                ModelState.AddModelError(string.Empty, "Debe seleccionar un doctor y un día válido.");
+                return View(dto);
             }
 
             var success = await _service.CreateAsync(dto);
-            if (success) return RedirectToAction(nameof(Index));
 
-            ModelState.AddModelError(string.Empty, "Error al guardar. Verifique el ID del Doctor.");
+            if (success)
+            {
+                return RedirectToAction(nameof(Index));
+            }
+
+            ModelState.AddModelError(string.Empty, "Error al guardar. Asegúrese de que el ID del Doctor existe en la base de datos.");
             return View(dto);
         }
 

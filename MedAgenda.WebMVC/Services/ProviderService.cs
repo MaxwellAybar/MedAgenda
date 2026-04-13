@@ -19,6 +19,13 @@ namespace MedAgenda.WebMVC.Services
             try
             {
                 var response = await _httpClient.GetAsync("Provider");
+
+                if (!response.IsSuccessStatusCode)
+                {
+                    _logger.LogWarning("API respondio con error: {StatusCode}", response.StatusCode);
+                    return new List<ProviderDto>();
+                }
+
                 var json = await response.Content.ReadAsStringAsync();
 
                 return JsonSerializer.Deserialize<List<ProviderDto>>(json,
@@ -27,14 +34,22 @@ namespace MedAgenda.WebMVC.Services
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener proveedores");
-                return new();
+                return new List<ProviderDto>();
             }
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"Provider/{id}");
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"Provider/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar proveedor");
+                return false;
+            }
         }
     }
 }
