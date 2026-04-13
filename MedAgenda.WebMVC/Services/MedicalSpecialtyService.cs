@@ -32,5 +32,17 @@ namespace MedAgenda.WebMVC.Services
             var response = await _httpClient.PostAsJsonAsync("MedicalSpecialty", dto);
             return response.IsSuccessStatusCode;
         }
+
+        public async Task<bool> UpdateAsync(MedicalSpecialtyDto dto)
+        {
+            var response = await _httpClient.PutAsJsonAsync("MedicalSpecialty", dto);
+            return response.IsSuccessStatusCode;
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"MedicalSpecialty/{id}");
+            return response.IsSuccessStatusCode;
+        }
     }
 }

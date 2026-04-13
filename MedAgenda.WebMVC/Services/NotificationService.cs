@@ -19,16 +19,22 @@ namespace MedAgenda.WebMVC.Services
             try
             {
                 var response = await _httpClient.GetAsync("Notification");
-                response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
+
                 return JsonSerializer.Deserialize<List<NotificationDto>>(json,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener notificaciones");
-                return new List<NotificationDto>();
+                return new();
             }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"Notification/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }

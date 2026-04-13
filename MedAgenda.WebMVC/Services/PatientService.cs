@@ -22,7 +22,7 @@ namespace MedAgenda.WebMVC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener la lista de pacientes.");
+                _logger.LogError(ex, "Error al obtener pacientes");
                 return new();
             }
         }
@@ -32,16 +32,39 @@ namespace MedAgenda.WebMVC.Services
             try
             {
                 var response = await _httpClient.PostAsJsonAsync("patient", dto);
-                if (!response.IsSuccessStatusCode)
-                {
-                    var error = await response.Content.ReadAsStringAsync();
-                    _logger.LogWarning("API Error (Patient): {Error}", error);
-                }
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Fallo de conexión al crear paciente.");
+                _logger.LogError(ex, "Error al crear paciente");
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateAsync(PatientDto dto)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("patient", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar paciente");
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"patient/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar paciente");
                 return false;
             }
         }

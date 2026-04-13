@@ -28,25 +28,39 @@ namespace MedAgenda.WebMVC.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(AppointmentDto dto)
         {
-          
             dto.Status = "Pendiente";
-
-           
             ModelState.Remove("Status");
 
             if (ModelState.IsValid)
             {
                 var success = await _service.CreateAsync(dto);
                 if (success)
-                {
                     return RedirectToAction(nameof(Index));
-                }
 
-            
-                ModelState.AddModelError(string.Empty, "No se pudo registrar la cita. Verifique que el ID del Doctor y el Paciente sean correctos.");
+                ModelState.AddModelError("", "Error al crear la cita");
             }
 
             return View(dto);
+        }
+
+   
+        public IActionResult Edit(int id)
+        {
+            return View();
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(AppointmentDto dto)
+        {
+            await _service.UpdateAsync(dto);
+            return RedirectToAction(nameof(Index));
+        }
+
+       
+        public async Task<IActionResult> Delete(int id)
+        {
+            await _service.DeleteAsync(id);
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -36,12 +36,14 @@ builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
 builder.Services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
 builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
 
-// Capa de Aplicación (Servicios)
+
 builder.Services.AddScoped<IAppointmentService, AppointmentService>();
 builder.Services.AddScoped<IMedicalSpecialtyService, MedicalSpecialtyService>();
 builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
 builder.Services.AddScoped<IPatientService, PatientService>();
 builder.Services.AddScoped<ISystemReportsService, SystemReportsService>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<ISystemHistoryService, SystemHistoryService>();
 
 var app = builder.Build();
 

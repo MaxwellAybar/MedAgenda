@@ -6,7 +6,7 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllersWithViews();
 
 
-var apiBaseUrl = "https://localhost:7183/api/";
+var apiBaseUrl = builder.Configuration["ApiSettings:BaseUrl"];
 
 
 void ConfigureClient(HttpClient client)
@@ -17,14 +17,17 @@ void ConfigureClient(HttpClient client)
 }
 
 
-
 builder.Services.AddHttpClient<PatientService>(ConfigureClient);
 builder.Services.AddHttpClient<AppointmentService>(ConfigureClient);
 builder.Services.AddHttpClient<MedicalSpecialtyService>(ConfigureClient);
 builder.Services.AddHttpClient<DoctorAvailabilityService>(ConfigureClient);
-builder.Services.AddHttpClient<NotificationService>(ConfigureClient); 
+builder.Services.AddHttpClient<NotificationService>(ConfigureClient);
+builder.Services.AddHttpClient<ProviderService>(ConfigureClient);
+builder.Services.AddHttpClient<SystemHistoryService>(ConfigureClient);
+builder.Services.AddHttpClient<SystemReportsService>(ConfigureClient);
 
 var app = builder.Build();
+
 
 if (!app.Environment.IsDevelopment())
 {
@@ -36,6 +39,7 @@ app.UseHttpsRedirection();
 app.UseStaticFiles();
 app.UseRouting();
 app.UseAuthorization();
+
 
 app.MapControllerRoute(
     name: "default",

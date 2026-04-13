@@ -1,8 +1,6 @@
 ﻿using MedAgenda.Application.Dtos.Notification;
 using MedAgenda.Application.Interfaces;
-using MedAgenda.Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -20,37 +18,72 @@ namespace MedAgenda.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _service.GetAllNotificationsAsync();
-            return Ok(data);
+            try
+            {
+                var data = await _service.GetAllNotificationsAsync();
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return Ok(new List<NotificationDto>()); 
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var data = await _service.GetNotificationByIdAsync(id);
-            return Ok(data);
+            try
+            {
+                var data = await _service.GetNotificationByIdAsync(id);
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return NotFound("Notificación no encontrada");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(CreateNotificationDto dto)
         {
-            await _service.CreateNotificationAsync(dto);
-            return Ok();
+            try
+            {
+                await _service.CreateNotificationAsync(dto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(UpdateNotificationDto dto)
         {
-            await _service.UpdateNotificationAsync(dto);
-            return Ok();
+            try
+            {
+                await _service.UpdateNotificationAsync(dto);
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _service.DeleteNotificationAsync(id);
-            if (!result) return NotFound("Notificación no encontrada");
-            return Ok();
+            try
+            {
+                var result = await _service.DeleteNotificationAsync(id);
+                if (!result) return NotFound("Notificación no encontrada");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

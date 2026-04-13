@@ -19,15 +19,15 @@ namespace MedAgenda.WebMVC.Services
             try
             {
                 var response = await _httpClient.GetAsync("SystemHistory");
-                response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
+
                 return JsonSerializer.Deserialize<List<SystemHistoryDto>>(json,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener historial");
-                return new List<SystemHistoryDto>();
+                return new();
             }
         }
     }

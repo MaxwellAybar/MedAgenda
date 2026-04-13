@@ -1,7 +1,6 @@
 ﻿using MedAgenda.Application.Dtos.SystemReports;
 using MedAgenda.Application.Interfaces;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -18,28 +17,72 @@ namespace MedAgenda.Api.Controllers
 
         [HttpGet]
         public async Task<IActionResult> GetAll()
-            => Ok(await _service.GetAllReportsAsync());
+        {
+            try
+            {
+                var data = await _service.GetAllReportsAsync();
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return Ok(new List<SystemReportsDto>()); 
+            }
+        }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var result = await _service.GetReportByIdAsync(id);
-            return result != null ? Ok(result) : NotFound();
+            try
+            {
+                var result = await _service.GetReportByIdAsync(id);
+                return result != null ? Ok(result) : NotFound();
+            }
+            catch (Exception)
+            {
+                return NotFound("Reporte no encontrado");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(CreateSystemReportsDto dto)
-            => Ok(await _service.CreateReportAsync(dto));
+        {
+            try
+            {
+                var result = await _service.CreateReportAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpPut]
         public async Task<IActionResult> Put(UpdateSystemReportsDto dto)
-            => Ok(await _service.UpdateReportAsync(dto));
+        {
+            try
+            {
+                var result = await _service.UpdateReportAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
+        }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _service.DeleteReportAsync(id);
-            return result ? Ok() : NotFound("Reporte no encontrado");
+            try
+            {
+                var result = await _service.DeleteReportAsync(id);
+                return result ? Ok() : NotFound("Reporte no encontrado");
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

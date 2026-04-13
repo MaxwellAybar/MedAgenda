@@ -19,15 +19,15 @@ namespace MedAgenda.WebMVC.Services
             try
             {
                 var response = await _httpClient.GetAsync("SystemReports");
-                response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
+
                 return JsonSerializer.Deserialize<List<SystemReportsDto>>(json,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener reportes");
-                return new List<SystemReportsDto>();
+                return new();
             }
         }
     }

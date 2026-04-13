@@ -19,21 +19,17 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                _logger.LogInformation("Solicitando lista de citas al API.");
                 var response = await _httpClient.GetAsync("appointment");
 
                 if (response.IsSuccessStatusCode)
-                {
                     return await response.Content.ReadFromJsonAsync<List<AppointmentDto>>() ?? new();
-                }
 
-                _logger.LogWarning("El API devolvió un estado de error: {StatusCode}", response.StatusCode);
-                return new List<AppointmentDto>();
+                return new();
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Fallo crítico de conexión al intentar obtener citas.");
-                return new List<AppointmentDto>();
+                _logger.LogError(ex, "Error al obtener citas");
+                return new();
             }
         }
 
@@ -41,34 +37,40 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                _logger.LogInformation("Enviando nueva cita al API para Paciente {P}", dto.PatientId);
-
-               
-                var data = new
-                {
-                    doctorId = dto.DoctorId,
-                    patientId = dto.PatientId,
-                    appointmentDate = dto.AppointmentDate,
-                    notes = dto.Notes ?? "Sin observaciones",
-                    status = "Pendiente"
-                };
-
-                var response = await _httpClient.PostAsJsonAsync("appointment", data);
-
-                if (!response.IsSuccessStatusCode)
-                {
-                   
-                    var errorBody = await response.Content.ReadAsStringAsync();
-                    _logger.LogError("Error de negocio en el API: {Error}", errorBody);
-                    return false;
-                }
-
-                _logger.LogInformation("Cita creada exitosamente a través del API.");
-                return true;
+                var response = await _httpClient.PostAsJsonAsync("appointment", dto);
+                return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error de comunicación con el servicio de citas.");
+                _logger.LogError(ex, "Error al crear cita");
+                return false;
+            }
+        }
+
+        public async Task<bool> UpdateAsync(AppointmentDto dto)
+        {
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("appointment", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar cita");
+                return false;
+            }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"appointment/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar cita");
                 return false;
             }
         }

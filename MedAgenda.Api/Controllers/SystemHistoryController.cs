@@ -1,8 +1,6 @@
 ﻿using MedAgenda.Application.Dtos.SystemHistory;
 using MedAgenda.Application.Interfaces;
-using MedAgenda.Application.Services;
 using Microsoft.AspNetCore.Mvc;
-using System.Threading.Tasks;
 
 namespace MedAgenda.Api.Controllers
 {
@@ -20,37 +18,72 @@ namespace MedAgenda.Api.Controllers
         [HttpGet]
         public async Task<IActionResult> GetAll()
         {
-            var data = await _service.GetAllHistoriesAsync();
-            return Ok(data);
+            try
+            {
+                var data = await _service.GetAllHistoriesAsync();
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return Ok(new List<SystemHistoryDto>()); 
+            }
         }
 
         [HttpGet("{id}")]
         public async Task<IActionResult> GetById(int id)
         {
-            var data = await _service.GetHistoryByIdAsync(id);
-            return Ok(data);
+            try
+            {
+                var data = await _service.GetHistoryByIdAsync(id);
+                return Ok(data);
+            }
+            catch (Exception)
+            {
+                return NotFound("Historial no encontrado");
+            }
         }
 
         [HttpPost]
         public async Task<IActionResult> Post(CreateSystemHistoryDto dto)
         {
-            var result = await _service.CreateHistoryAsync(dto);
-            return Ok(result);
+            try
+            {
+                var result = await _service.CreateHistoryAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpPut]
         public async Task<IActionResult> Put(UpdateSystemHistoryDto dto)
         {
-            var result = await _service.UpdateHistoryAsync(dto);
-            return Ok(result);
+            try
+            {
+                var result = await _service.UpdateHistoryAsync(dto);
+                return Ok(result);
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var result = await _service.DeleteHistoryAsync(id);
-            if (!result) return NotFound("Registro de historial no encontrado");
-            return Ok();
+            try
+            {
+                var result = await _service.DeleteHistoryAsync(id);
+                if (!result) return NotFound("Registro de historial no encontrado");
+                return Ok();
+            }
+            catch (Exception ex)
+            {
+                return BadRequest(ex.Message);
+            }
         }
     }
 }

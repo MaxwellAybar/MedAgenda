@@ -8,7 +8,6 @@ namespace MedAgenda.WebMVC.Services
         private readonly HttpClient _httpClient;
         private readonly ILogger<ProviderService> _logger;
 
-       
         public ProviderService(HttpClient httpClient, ILogger<ProviderService> logger)
         {
             _httpClient = httpClient;
@@ -19,18 +18,23 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-             
                 var response = await _httpClient.GetAsync("Provider");
-                response.EnsureSuccessStatusCode();
                 var json = await response.Content.ReadAsStringAsync();
+
                 return JsonSerializer.Deserialize<List<ProviderDto>>(json,
                     new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
             }
             catch (Exception ex)
             {
                 _logger.LogError(ex, "Error al obtener proveedores");
-                return new List<ProviderDto>();
+                return new();
             }
+        }
+
+        public async Task<bool> DeleteAsync(int id)
+        {
+            var response = await _httpClient.DeleteAsync($"Provider/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }
