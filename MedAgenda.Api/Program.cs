@@ -1,10 +1,7 @@
-﻿using MedAgenda.Application.Exceptions;
-using MedAgenda.Application.Interfaces;
-using MedAgenda.Application.Services;
+﻿using MedAgenda.Api;
 using MedAgenda.Persistence.Context;
-using MedAgenda.Persistence.Interfaces;
-using MedAgenda.Persistence.Repositories;
 using Microsoft.EntityFrameworkCore;
+using MedAgenda.Application.Exceptions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -17,6 +14,7 @@ builder.Services.AddSwaggerGen();
 builder.Services.AddDbContext<MedAgendaContext>(options =>
     options.UseSqlServer(builder.Configuration.GetConnectionString("DefaultConnection")));
 
+
 builder.Services.AddCors(options => {
     options.AddPolicy("AllowAll", policy => {
         policy.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader();
@@ -24,27 +22,7 @@ builder.Services.AddCors(options => {
 });
 
 
-
-
-builder.Services.AddScoped<IUserRepository, UserRepository>();
-builder.Services.AddScoped<IMedicalSpecialtyRepository, MedicalSpecialtyRepository>();
-builder.Services.AddScoped<IAppointmentRepository, AppointmentRepository>(); 
-builder.Services.AddScoped<IPatientRepository, PatientRepository>();
-builder.Services.AddScoped<IProviderRepository, ProviderRepository>();
-builder.Services.AddScoped<INotificationRepository, NotificationRepository>();
-builder.Services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
-builder.Services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
-builder.Services.AddScoped<IDoctorAvailabilityRepository, DoctorAvailabilityRepository>();
-
-
-builder.Services.AddScoped<IAppointmentService, AppointmentService>();
-builder.Services.AddScoped<IMedicalSpecialtyService, MedicalSpecialtyService>();
-builder.Services.AddScoped<IDoctorAvailabilityService, DoctorAvailabilityService>();
-builder.Services.AddScoped<IPatientService, PatientService>();
-builder.Services.AddScoped<ISystemReportsService, SystemReportsService>();
-builder.Services.AddScoped<INotificationService, NotificationService>();
-builder.Services.AddScoped<ISystemHistoryService, SystemHistoryService>();
-builder.Services.AddScoped<IProviderService, ProviderService>();
+builder.Services.AddProjectDependencies();
 
 var app = builder.Build();
 
@@ -72,13 +50,13 @@ app.UseExceptionHandler(errorApp =>
 
         if (exception is NotFoundException)
         {
-            context.Response.StatusCode = 404;
-            await context.Response.WriteAsync(exception.Message);
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            await context.Response.WriteAsJsonAsync(new { error = exception.Message });
         }
         else
         {
-            context.Response.StatusCode = 500;
-            await context.Response.WriteAsync("Error interno del servidor");
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsJsonAsync(new { error = "Error interno del servidor" });
         }
     });
 });
