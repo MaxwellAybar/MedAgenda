@@ -9,8 +9,8 @@ namespace MedAgenda.Api
     {
         public static IServiceCollection AddProjectDependencies(this IServiceCollection services)
         {
-            // --- Repositorios ---
-            services.AddScoped<IUserRepository, UserRepository>(); // <--- AGREGAR ESTA
+           
+            services.AddScoped<IUserRepository, UserRepository>(); 
             services.AddScoped<IPatientRepository, PatientRepository>();
             services.AddScoped<IAppointmentRepository, AppointmentRepository>();
             services.AddScoped<IMedicalSpecialtyRepository, MedicalSpecialtyRepository>();
@@ -20,8 +20,8 @@ namespace MedAgenda.Api
             services.AddScoped<ISystemHistoryRepository, SystemHistoryRepository>();
             services.AddScoped<ISystemReportsRepository, SystemReportsRepository>();
 
-            // --- Servicios ---
-            services.AddScoped<IUserService, UserService>();       // <--- AGREGAR ESTA
+           
+            services.AddScoped<IUserService, UserService>();      
             services.AddScoped<IPatientService, PatientService>();
             services.AddScoped<IAppointmentService, AppointmentService>();
             services.AddScoped<IMedicalSpecialtyService, MedicalSpecialtyService>();
