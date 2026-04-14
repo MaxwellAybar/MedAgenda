@@ -1,6 +1,7 @@
 ﻿using MedAgenda.Application.Dtos.User;
 using MedAgenda.Application.Interfaces;
 using MedAgenda.Persistence.Interfaces;
+using MedAgenda.Application.Exceptions;
 using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
@@ -22,22 +23,15 @@ namespace MedAgenda.Application.Services
 
         public async Task<IEnumerable<UserDto>> GetAllUsersAsync()
         {
-            try
+            _logger.LogInformation("Obteniendo lista completa de usuarios");
+            var users = await _repository.GetAllAsync();
+            return users.Select(u => new UserDto
             {
-                var users = await _repository.GetAllAsync();
-                return users.Select(u => new UserDto
-                {
-                    Id = u.Id,
-                    UserName = u.Username,
-                    Email = u.Email,
-                    Role = u.Role
-                }).ToList();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error GetAllUsersAsync");
-                return new List<UserDto>();
-            }
+                Id = u.Id,
+                UserName = u.Username,
+                Email = u.Email,
+                Role = u.Role
+            }).ToList();
         }
     }
 }
