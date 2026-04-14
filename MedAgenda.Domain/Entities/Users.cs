@@ -18,7 +18,7 @@ namespace MedAgenda.Domain.Entities
 
         public string Password { get; set; }
 
-        public string Role { get; set; } // Admin, Doctor, Patient
+        public string Role { get; set; } 
 
         public bool IsActive { get; set; }
 
