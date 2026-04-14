@@ -45,7 +45,7 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.PutAsJsonAsync($"Provider/{dto.Id}", dto);
+                var response = await _httpClient.PutAsJsonAsync("Provider", dto);
                 return response.IsSuccessStatusCode;
             }
             catch (Exception ex)
