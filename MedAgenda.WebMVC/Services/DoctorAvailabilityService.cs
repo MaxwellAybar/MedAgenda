@@ -49,6 +49,29 @@ namespace MedAgenda.WebMVC.Services
             }
         }
 
+        public async Task<bool> UpdateAsync(DoctorAvailabilityDTO dto)
+        {
+            try
+            {
+                var payload = new
+                {
+                    id = dto.Id,
+                    providerId = dto.ProviderId,
+                    day = dto.Day,
+                    startTime = dto.StartTime.Length == 5 ? $"{dto.StartTime}:00" : dto.StartTime,
+                    endTime = dto.EndTime.Length == 5 ? $"{dto.EndTime}:00" : dto.EndTime
+                };
+
+                var response = await _httpClient.PutAsJsonAsync("DoctorAvailability", payload);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error UpdateAsync");
+                return false;
+            }
+        }
+
         public async Task<bool> DeleteAsync(int id)
         {
             try

@@ -1,22 +1,48 @@
-﻿@model MedAgenda.WebMVC.Models.NotificationDto
+﻿@model MedAgenda.WebMVC.Models.DoctorAvailabilityDTO
 
-<h2>Editar Notificación</h2>
+@{
+    ViewData["Title"] = "Editar Disponibilidad";
+}
 
-<form asp-action="Edit" method="post">
-    <input type="hidden" asp-for="Id" />
-    <input type="hidden" asp-for="UserId" />
-    <input type="hidden" asp-for="SentDate" />
+<div class="container mt-4">
+    <h1>Editar Disponibilidad</h1>
+    <hr />
 
-    <div class="mb-3">
-        <label class="form-label">Mensaje</label>
-        <textarea asp-for="Message" class="form-control" rows="4" required></textarea>
+    <div class="row">
+        <div class="col-md-6">
+            <form asp-action="Edit">
+                <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+                <input type="hidden" asp-for="Id" />
+
+                <div class="form-group mb-3">
+                    <label asp-for="ProviderId" class="control-label fw-bold">ID Doctor</label>
+                    <input asp-for="ProviderId" class="form-control" readonly />
+                    <span asp-validation-for="ProviderId" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="Day" class="control-label fw-bold">Día (Número)</label>
+                    <input asp-for="Day" class="form-control" />
+                    <span asp-validation-for="Day" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-3">
+                    <label asp-for="StartTime" class="control-label fw-bold">Hora Inicio</label>
+                    <input asp-for="StartTime" class="form-control" type="time" />
+                    <span asp-validation-for="StartTime" class="text-danger"></span>
+                </div>
+
+                <div class="form-group mb-4">
+                    <label asp-for="EndTime" class="control-label fw-bold">Hora Fin</label>
+                    <input asp-for="EndTime" class="form-control" type="time" />
+                    <span asp-validation-for="EndTime" class="text-danger"></span>
+                </div>
+
+                <div class="form-group d-flex gap-2 mb-5">
+                    <button type="submit" class="btn btn-primary">Guardar Cambios</button>
+                    <a asp-action="Index" class="btn btn-secondary">Volver</a>
+                </div>
+            </form>
+        </div>
     </div>
-
-    <div class="form-check mb-3">
-        <input asp-for="IsRead" class="form-check-input" type="checkbox" />
-        <label class="form-check-label">Marcar como leída</label>
-    </div>
-
-    <button type="submit" class="btn btn-success">Guardar Cambios</button>
-    <a asp-action="Index" class="btn btn-secondary">Cancelar</a>
-</form>
+</div>

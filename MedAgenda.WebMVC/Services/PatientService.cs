@@ -35,27 +35,51 @@ namespace MedAgenda.WebMVC.Services
             }
             catch (Exception ex)
             {
-                _logger.LogError(ex, "Error al obtener paciente por ID");
+                _logger.LogError(ex, $"Error al obtener paciente {id}");
                 return null;
             }
         }
 
         public async Task<bool> CreateAsync(PatientDto dto)
         {
-            var response = await _httpClient.PostAsJsonAsync("Patient", dto);
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PostAsJsonAsync("Patient", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al crear paciente");
+                return false;
+            }
         }
 
         public async Task<bool> UpdateAsync(PatientDto dto)
         {
-            var response = await _httpClient.PutAsJsonAsync($"Patient/{dto.Id}", dto);
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.PutAsJsonAsync("Patient", dto);
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al actualizar paciente");
+                return false;
+            }
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            var response = await _httpClient.DeleteAsync($"Patient/{id}");
-            return response.IsSuccessStatusCode;
+            try
+            {
+                var response = await _httpClient.DeleteAsync($"Patient/{id}");
+                return response.IsSuccessStatusCode;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "Error al eliminar paciente");
+                return false;
+            }
         }
     }
 }

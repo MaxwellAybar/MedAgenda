@@ -47,6 +47,23 @@ namespace MedAgenda.WebMVC.Controllers
             return View(dto);
         }
 
+        public async Task<IActionResult> Edit(int id)
+        {
+            var all = await _service.GetAllAsync();
+            var item = all.FirstOrDefault(x => x.Id == id);
+            if (item == null) return NotFound();
+            return View(item);
+        }
+
+        [HttpPost]
+        public async Task<IActionResult> Edit(DoctorAvailabilityDTO dto)
+        {
+            if (!ModelState.IsValid) return View(dto);
+            var success = await _service.UpdateAsync(dto);
+            if (success) return RedirectToAction(nameof(Index));
+            return View(dto);
+        }
+
         [HttpPost]
         public async Task<IActionResult> Delete(int id)
         {

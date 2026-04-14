@@ -1,6 +1,5 @@
 ﻿using MedAgenda.WebMVC.Models;
 using System.Net.Http.Json;
-using Microsoft.Extensions.Logging;
 
 namespace MedAgenda.WebMVC.Services
 {
@@ -19,12 +18,7 @@ namespace MedAgenda.WebMVC.Services
         {
             try
             {
-                var response = await _httpClient.GetAsync("appointment");
-
-                if (response.IsSuccessStatusCode)
-                    return await response.Content.ReadFromJsonAsync<List<AppointmentDto>>() ?? new();
-
-                return new();
+                return await _httpClient.GetFromJsonAsync<List<AppointmentDto>>("appointment") ?? new();
             }
             catch (Exception ex)
             {
