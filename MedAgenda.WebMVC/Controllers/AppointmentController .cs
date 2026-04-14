@@ -1,16 +1,19 @@
 ﻿using MedAgenda.WebMVC.Services;
 using MedAgenda.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace MedAgenda.WebMVC.Controllers
 {
     public class AppointmentController : Controller
     {
         private readonly AppointmentService _service;
+        private readonly ILogger<AppointmentController> _logger;
 
-        public AppointmentController(AppointmentService service)
+        public AppointmentController(AppointmentService service, ILogger<AppointmentController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()

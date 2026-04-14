@@ -1,16 +1,19 @@
 ﻿using MedAgenda.WebMVC.Services;
 using MedAgenda.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace MedAgenda.WebMVC.Controllers
 {
     public class DoctorAvailabilityController : Controller
     {
         private readonly DoctorAvailabilityService _service;
+        private readonly ILogger<DoctorAvailabilityController> _logger;
 
-        public DoctorAvailabilityController(DoctorAvailabilityService service)
+        public DoctorAvailabilityController(DoctorAvailabilityService service, ILogger<DoctorAvailabilityController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()

@@ -1,16 +1,19 @@
 ﻿using MedAgenda.WebMVC.Services;
 using MedAgenda.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 
 namespace MedAgenda.WebMVC.Controllers
 {
     public class PatientController : Controller
     {
         private readonly PatientService _service;
+        private readonly ILogger<PatientController> _logger;
 
-        public PatientController(PatientService service)
+        public PatientController(PatientService service, ILogger<PatientController> logger)
         {
             _service = service;
+            _logger = logger;
         }
 
         public async Task<IActionResult> Index()
