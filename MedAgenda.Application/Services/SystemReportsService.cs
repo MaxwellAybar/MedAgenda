@@ -36,10 +36,7 @@ namespace MedAgenda.Application.Services
                 CreatedDate = DateTime.Now
             };
 
-            _logger.LogInformation("Guardando reporte en base de datos");
-
             await _repository.AddAsync(entity);
-
             _logger.LogInformation("Reporte creado correctamente");
 
             return new SystemReportsDto
@@ -55,7 +52,6 @@ namespace MedAgenda.Application.Services
         public async Task<SystemReportsDto> UpdateReportAsync(UpdateSystemReportsDto dto)
         {
             _logger.LogInformation("Actualizando reporte con ID: {Id}", dto.Id);
-
             var entity = await _repository.GetByIdAsync(dto.Id);
 
             if (entity == null)
@@ -67,10 +63,7 @@ namespace MedAgenda.Application.Services
             entity.Title = dto.Title;
             entity.Description = dto.Description;
 
-            _logger.LogInformation("Guardando cambios del reporte");
-
             await _repository.UpdateAsync(entity);
-
             _logger.LogInformation("Reporte actualizado correctamente");
 
             return new SystemReportsDto
@@ -86,7 +79,6 @@ namespace MedAgenda.Application.Services
         public async Task<bool> DeleteReportAsync(int id)
         {
             _logger.LogInformation("Eliminando reporte con ID: {Id}", id);
-
             var entity = await _repository.GetByIdAsync(id);
 
             if (entity == null)
@@ -96,16 +88,13 @@ namespace MedAgenda.Application.Services
             }
 
             await _repository.DeleteAsync(entity);
-
             _logger.LogInformation("Reporte eliminado correctamente");
-
             return true;
         }
 
         public async Task<SystemReportsDto> GetReportByIdAsync(int id)
         {
             _logger.LogInformation("Obteniendo reporte con ID: {Id}", id);
-
             var entity = await _repository.GetByIdAsync(id);
 
             if (entity == null)
@@ -127,9 +116,7 @@ namespace MedAgenda.Application.Services
         public async Task<IEnumerable<SystemReportsDto>> GetAllReportsAsync()
         {
             _logger.LogInformation("Obteniendo todos los reportes");
-
             var data = await _repository.GetAllAsync();
-
             _logger.LogInformation("Cantidad de reportes: {Count}", data.Count());
 
             return data.Select(x => new SystemReportsDto

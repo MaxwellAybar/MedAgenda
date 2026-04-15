@@ -2,6 +2,8 @@
 using MedAgenda.WebMVC.Models;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Logging;
+using System.Linq;
+using System.Threading.Tasks;
 
 namespace MedAgenda.WebMVC.Controllers
 {
@@ -28,9 +30,10 @@ namespace MedAgenda.WebMVC.Controllers
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create(DoctorAvailabilityDTO dto)
         {
-            if (dto.Day <= 0 || dto.ProviderId <= 0)
+            if (dto.Day < 0 || dto.ProviderId <= 0)
             {
                 ModelState.AddModelError(string.Empty, "Debe seleccionar un doctor y un día válido.");
                 return View(dto);
@@ -56,15 +59,22 @@ namespace MedAgenda.WebMVC.Controllers
         }
 
         [HttpPost]
-        public async Task<IActionResult> Edit(DoctorAvailabilityDTO dto)
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> Edit(int id, DoctorAvailabilityDTO dto)
         {
+            if (id != dto.Id) return BadRequest();
+
             if (!ModelState.IsValid) return View(dto);
+
             var success = await _service.UpdateAsync(dto);
             if (success) return RedirectToAction(nameof(Index));
+
+            ModelState.AddModelError(string.Empty, "Error al actualizar la disponibilidad.");
             return View(dto);
         }
 
         [HttpPost]
+        [ValidateAntiForgeryToken]
         public async Task<IActionResult> Delete(int id)
         {
             await _service.DeleteAsync(id);

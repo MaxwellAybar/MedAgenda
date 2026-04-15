@@ -6,80 +6,39 @@ namespace MedAgenda.WebMVC.Services
     public class PatientService
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<PatientService> _logger;
 
-        public PatientService(HttpClient httpClient, ILogger<PatientService> logger)
+        public PatientService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _logger = logger;
         }
 
         public async Task<List<PatientDto>> GetAllAsync()
         {
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<List<PatientDto>>("Patient") ?? new();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener pacientes");
-                return new();
-            }
+            var response = await _httpClient.GetFromJsonAsync<List<PatientDto>>("Patient");
+            return response ?? new List<PatientDto>();
         }
 
         public async Task<PatientDto?> GetByIdAsync(int id)
         {
-            try
-            {
-                return await _httpClient.GetFromJsonAsync<PatientDto>($"Patient/{id}");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, $"Error al obtener paciente {id}");
-                return null;
-            }
+            return await _httpClient.GetFromJsonAsync<PatientDto>($"Patient/{id}");
         }
 
         public async Task<bool> CreateAsync(PatientDto dto)
         {
-            try
-            {
-                var response = await _httpClient.PostAsJsonAsync("Patient", dto);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al crear paciente");
-                return false;
-            }
+            var response = await _httpClient.PostAsJsonAsync("Patient", dto);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> UpdateAsync(PatientDto dto)
         {
-            try
-            {
-                var response = await _httpClient.PutAsJsonAsync("Patient", dto);
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al actualizar paciente");
-                return false;
-            }
+            var response = await _httpClient.PutAsJsonAsync("Patient", dto);
+            return response.IsSuccessStatusCode;
         }
 
         public async Task<bool> DeleteAsync(int id)
         {
-            try
-            {
-                var response = await _httpClient.DeleteAsync($"Patient/{id}");
-                return response.IsSuccessStatusCode;
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al eliminar paciente");
-                return false;
-            }
+            var response = await _httpClient.DeleteAsync($"Patient/{id}");
+            return response.IsSuccessStatusCode;
         }
     }
 }

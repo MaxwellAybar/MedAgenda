@@ -2,19 +2,16 @@
 using MedAgenda.Persistence.Context;
 using MedAgenda.Persistence.Interfaces;
 using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Logging;
 
 namespace MedAgenda.Persistence.Repositories
 {
     public class DoctorAvailabilityRepository : IDoctorAvailabilityRepository
     {
         private readonly MedAgendaContext _context;
-        private readonly ILogger<DoctorAvailabilityRepository> _logger;
 
-        public DoctorAvailabilityRepository(MedAgendaContext context, ILogger<DoctorAvailabilityRepository> logger)
+        public DoctorAvailabilityRepository(MedAgendaContext context)
         {
             _context = context;
-            _logger = logger;
         }
 
         public async Task<List<DoctorAvailability>> GetAllAsync()
@@ -31,47 +28,20 @@ namespace MedAgenda.Persistence.Repositories
 
         public async Task AddAsync(DoctorAvailability availability)
         {
-            try
-            {
-                await _context.DoctorAvailabilities.AddAsync(availability);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Operación AddAsync exitosa");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error en AddAsync");
-                throw;
-            }
+            await _context.DoctorAvailabilities.AddAsync(availability);
+            await _context.SaveChangesAsync();
         }
 
         public async Task UpdateAsync(DoctorAvailability availability)
         {
-            try
-            {
-                _context.Entry(availability).State = EntityState.Modified;
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Operación UpdateAsync exitosa");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error en UpdateAsync");
-                throw;
-            }
+            _context.Entry(availability).State = EntityState.Modified;
+            await _context.SaveChangesAsync();
         }
 
         public async Task DeleteAsync(DoctorAvailability availability)
         {
-            try
-            {
-                _context.DoctorAvailabilities.Remove(availability);
-                await _context.SaveChangesAsync();
-                _logger.LogInformation("Operación DeleteAsync exitosa");
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error en DeleteAsync");
-                throw;
-            }
+            _context.DoctorAvailabilities.Remove(availability);
+            await _context.SaveChangesAsync();
         }
 
         public async Task<List<DoctorAvailability>> GetByDoctorIdAsync(int doctorId)
@@ -85,7 +55,6 @@ namespace MedAgenda.Persistence.Repositories
         public async Task<bool> IsDoctorAvailableAsync(int doctorId, DateTime appointmentDate)
         {
             int dayOfWeek = (int)appointmentDate.DayOfWeek;
-
             return await _context.DoctorAvailabilities
                 .AnyAsync(d => d.ProviderId == doctorId && (int)d.Day == dayOfWeek);
         }

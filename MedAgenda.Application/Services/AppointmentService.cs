@@ -27,25 +27,8 @@ namespace MedAgenda.Application.Services
             _logger = logger;
         }
 
-        public async Task<IEnumerable<AppointmentDto>> GetAllAppointmentsAsync()
-        {
-            var appointments = await _repository.GetAllAsync();
-            return appointments.Select(x => new AppointmentDto
-            {
-                Id = x.Id,
-                PatientId = x.PatientId,
-                DoctorId = x.DoctorId,
-                AppointmentDate = x.AppointmentDate,
-                Status = x.Status ?? "Pendiente",
-                Notes = x.Notes ?? string.Empty
-            });
-        }
-
         public async Task<AppointmentDto> CreateAppointmentAsync(CreateAppointmentDto dto)
         {
-            _logger.LogInformation("Intentando crear cita para Paciente {P} y Doctor {D}", dto.PatientId, dto.DoctorId);
-
-
             bool isAvailable = await _availabilityRepository
                 .IsDoctorAvailableAsync(dto.DoctorId, dto.AppointmentDate);
 
@@ -54,43 +37,16 @@ namespace MedAgenda.Application.Services
                 throw new NotFoundException("El médico no tiene disponibilidad programada para esta fecha/hora.");
             }
 
-           
             var entity = new Appointment
             {
                 PatientId = dto.PatientId,
-                DoctorId = dto.DoctorId, 
+                DoctorId = dto.DoctorId,
                 AppointmentDate = dto.AppointmentDate,
-                
                 Status = string.IsNullOrWhiteSpace(dto.Status) ? "Pendiente" : dto.Status,
                 Notes = dto.Notes ?? "Sin observaciones"
             };
 
-            try
-            {
-                await _repository.AddAsync(entity);
-            }
-            catch (Exception ex)
-            {
-                var message = ex.InnerException?.Message ?? ex.Message;
-                _logger.LogError("Error al persistir en la BD: {Msg}", message);
-                throw new Exception($"Error de base de datos: {message}");
-            }
-
-            return new AppointmentDto
-            {
-                Id = entity.Id,
-                PatientId = entity.PatientId,
-                DoctorId = entity.DoctorId,
-                AppointmentDate = entity.AppointmentDate,
-                Status = entity.Status,
-                Notes = entity.Notes
-            };
-        }
-
-        public async Task<AppointmentDto> GetAppointmentByIdAsync(int id)
-        {
-            var entity = await _repository.GetByIdAsync(id);
-            if (entity == null) throw new NotFoundException("Cita no encontrada");
+            await _repository.AddAsync(entity);
 
             return new AppointmentDto
             {
@@ -106,7 +62,11 @@ namespace MedAgenda.Application.Services
         public async Task<AppointmentDto> UpdateAppointmentAsync(UpdateAppointmentDto dto)
         {
             var entity = await _repository.GetByIdAsync(dto.Id);
-            if (entity == null) throw new NotFoundException("Cita no encontrada");
+
+            if (entity == null)
+            {
+                throw new NotFoundException("Cita no encontrada");
+            }
 
             if (dto.AppointmentDate.HasValue)
             {
@@ -142,6 +102,40 @@ namespace MedAgenda.Application.Services
             entity.Status = "Cancelada";
             await _repository.UpdateAsync(entity);
             return true;
+        }
+
+        public async Task<AppointmentDto> GetAppointmentByIdAsync(int id)
+        {
+            var entity = await _repository.GetByIdAsync(id);
+
+            if (entity == null)
+            {
+                throw new NotFoundException("Cita no encontrada");
+            }
+
+            return new AppointmentDto
+            {
+                Id = entity.Id,
+                PatientId = entity.PatientId,
+                DoctorId = entity.DoctorId,
+                AppointmentDate = entity.AppointmentDate,
+                Status = entity.Status,
+                Notes = entity.Notes
+            };
+        }
+
+        public async Task<IEnumerable<AppointmentDto>> GetAllAppointmentsAsync()
+        {
+            var data = await _repository.GetAllAsync();
+            return data.Select(x => new AppointmentDto
+            {
+                Id = x.Id,
+                PatientId = x.PatientId,
+                DoctorId = x.DoctorId,
+                AppointmentDate = x.AppointmentDate,
+                Status = x.Status ?? "Pendiente",
+                Notes = x.Notes ?? string.Empty
+            });
         }
 
         public async Task<IEnumerable<AppointmentDto>> GetAppointmentsByPatientAsync(int patientId)

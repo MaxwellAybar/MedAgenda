@@ -26,9 +26,7 @@ namespace MedAgenda.Application.Services
         public async Task<IEnumerable<MedicalSpecialtyDto>> GetAll()
         {
             _logger.LogInformation("Obteniendo lista de especialidades médicas");
-
             var list = await _repository.GetAllAsync();
-
             _logger.LogInformation("Cantidad de especialidades: {Count}", list.Count());
 
             return list.Select(x => new MedicalSpecialtyDto
@@ -42,7 +40,6 @@ namespace MedAgenda.Application.Services
         public async Task<MedicalSpecialtyDto> GetById(int id)
         {
             _logger.LogInformation("Obteniendo especialidad con ID: {Id}", id);
-
             var entity = await _repository.GetByIdAsync(id);
 
             if (entity == null)
@@ -62,24 +59,19 @@ namespace MedAgenda.Application.Services
         public async Task Add(CreateMedicalSpecialtyDto dto)
         {
             _logger.LogInformation("Creando especialidad médica");
-
             var entity = new MedicalSpecialty
             {
                 Name = dto.Name,
                 Description = dto.Description
             };
 
-            _logger.LogInformation("Guardando especialidad en base de datos");
-
             await _repository.AddAsync(entity);
-
             _logger.LogInformation("Especialidad creada correctamente");
         }
 
         public async Task Update(UpdateMedicalSpecialtyDto dto)
         {
             _logger.LogInformation("Actualizando especialidad con ID: {Id}", dto.Id);
-
             var entity = await _repository.GetByIdAsync(dto.Id);
 
             if (entity == null)
@@ -91,17 +83,13 @@ namespace MedAgenda.Application.Services
             entity.Name = dto.Name;
             entity.Description = dto.Description;
 
-            _logger.LogInformation("Guardando cambios de especialidad");
-
             await _repository.UpdateAsync(entity);
-
             _logger.LogInformation("Especialidad actualizada correctamente");
         }
 
         public async Task Delete(int id)
         {
             _logger.LogInformation("Eliminando especialidad con ID: {Id}", id);
-
             var entity = await _repository.GetByIdAsync(id);
 
             if (entity == null)
@@ -111,7 +99,6 @@ namespace MedAgenda.Application.Services
             }
 
             await _repository.DeleteAsync(entity);
-
             _logger.LogInformation("Especialidad eliminada correctamente");
         }
     }

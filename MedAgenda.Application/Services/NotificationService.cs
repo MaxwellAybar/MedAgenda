@@ -36,10 +36,7 @@ namespace MedAgenda.Application.Services
                 IsRead = false
             };
 
-            _logger.LogInformation("Guardando notificación en base de datos");
-
             await _repository.AddAsync(entity);
-
             _logger.LogInformation("Notificación creada correctamente");
 
             return new NotificationDto
@@ -55,7 +52,6 @@ namespace MedAgenda.Application.Services
         public async Task<NotificationDto> UpdateNotificationAsync(UpdateNotificationDto dto)
         {
             _logger.LogInformation("Actualizando notificación con ID: {Id}", dto.Id);
-
             var entity = await _repository.GetByIdAsync(dto.Id);
 
             if (entity == null)
@@ -67,10 +63,7 @@ namespace MedAgenda.Application.Services
             entity.Message = dto.Message;
             entity.IsRead = dto.IsRead;
 
-            _logger.LogInformation("Guardando cambios de notificación");
-
             await _repository.UpdateAsync(entity);
-
             _logger.LogInformation("Notificación actualizada correctamente");
 
             return new NotificationDto
@@ -86,7 +79,6 @@ namespace MedAgenda.Application.Services
         public async Task<bool> DeleteNotificationAsync(int id)
         {
             _logger.LogInformation("Eliminando notificación con ID: {Id}", id);
-
             var entity = await _repository.GetByIdAsync(id);
 
             if (entity == null)
@@ -96,16 +88,13 @@ namespace MedAgenda.Application.Services
             }
 
             await _repository.DeleteAsync(entity);
-
             _logger.LogInformation("Notificación eliminada correctamente");
-
             return true;
         }
 
         public async Task<NotificationDto> GetNotificationByIdAsync(int id)
         {
             _logger.LogInformation("Obteniendo notificación con ID: {Id}", id);
-
             var entity = await _repository.GetByIdAsync(id);
 
             if (entity == null)
@@ -127,9 +116,7 @@ namespace MedAgenda.Application.Services
         public async Task<IEnumerable<NotificationDto>> GetAllNotificationsAsync()
         {
             _logger.LogInformation("Obteniendo todas las notificaciones");
-
             var data = await _repository.GetAllAsync();
-
             _logger.LogInformation("Cantidad de notificaciones: {Count}", data.Count());
 
             return data.Select(x => new NotificationDto

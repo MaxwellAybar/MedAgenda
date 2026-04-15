@@ -1,34 +1,21 @@
 ﻿using MedAgenda.WebMVC.Models;
-using System.Text.Json;
+using System.Net.Http.Json;
 
 namespace MedAgenda.WebMVC.Services
 {
     public class SystemHistoryService
     {
         private readonly HttpClient _httpClient;
-        private readonly ILogger<SystemHistoryService> _logger;
 
-        public SystemHistoryService(HttpClient httpClient, ILogger<SystemHistoryService> logger)
+        public SystemHistoryService(HttpClient httpClient)
         {
             _httpClient = httpClient;
-            _logger = logger;
         }
 
         public async Task<List<SystemHistoryDto>> GetAllAsync()
         {
-            try
-            {
-                var response = await _httpClient.GetAsync("SystemHistory");
-                var json = await response.Content.ReadAsStringAsync();
-
-                return JsonSerializer.Deserialize<List<SystemHistoryDto>>(json,
-                    new JsonSerializerOptions { PropertyNameCaseInsensitive = true }) ?? new();
-            }
-            catch (Exception ex)
-            {
-                _logger.LogError(ex, "Error al obtener historial");
-                return new();
-            }
+            var response = await _httpClient.GetFromJsonAsync<List<SystemHistoryDto>>("SystemHistory");
+            return response ?? new List<SystemHistoryDto>();
         }
     }
 }
